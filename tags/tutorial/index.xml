@@ -4,7 +4,235 @@
 &lt;span style="font-weight:bold">return&lt;/span> &lt;span style="font-weight:bold">nil&lt;/span>
 }
 }
-&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>Making and storing references to game objects (entities) in C++ and Lua</title><link>https://eliasdaler.github.io/hugo-test/posts/game-object-references/</link><pubDate>Sun, 22 Jan 2017 14:00:00 +0300</pubDate><guid>https://eliasdaler.github.io/hugo-test/posts/game-object-references/</guid><description>&lt;div>
+&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>Re:creation dev log. December 2016 - March 2017.</title><link>https://eliasdaler.github.io/hugo-test/posts/re-creation-devlog-december-march/</link><pubDate>Wed, 19 Apr 2017 23:00:00 +0300</pubDate><guid>https://eliasdaler.github.io/hugo-test/posts/re-creation-devlog-december-march/</guid><description>&lt;p>No posts in four months! And I haven&amp;rsquo;t worked on the game for the last one and a half. Is the project dead? No! Let&amp;rsquo;s pretend that nothing happened and I&amp;rsquo;ll show what I did since December and will tell about my future plans in the end.&lt;/p>
+&lt;figure>&lt;img src="child-parent.gif"/>&lt;figcaption>
+&lt;h4>Child-parent example&lt;/h4>
+&lt;/figcaption>
+&lt;/figure>
+&lt;div>
+&lt;h2>Table Of Contents&lt;/h2>
+&lt;nav id="TableOfContents">
+&lt;ul>
+&lt;li>&lt;a href="#lots-of-work-moving-everything-to-lua">Lots of work! Moving everything to Lua&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#gui">GUI&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#some-small-c-related-refactorings">Some small C++ related refactorings&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#levels-and-tile-maps">Levels and tile maps&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#child-parent-hierarchy-and-relative-transforms">Child-parent hierarchy and relative transforms&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#other-small-things">Other small things&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#conclusion-and-plans">Conclusion and plans&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/nav>
+&lt;/div>
+&lt;h2 id="lots-of-work-moving-everything-to-lua">Lots of work! Moving everything to Lua&lt;/h2>
+&lt;p>I moved a lot of code to Lua! For quite some time I thought that this didn&amp;rsquo;t make much sense or was very difficult, but turns out it&amp;rsquo;s easier as the more and more code gets moved to Lua. Here&amp;rsquo;s a comparison of lines of code between two dates.&lt;/p>
+&lt;p>&lt;strong>27.11.2016&lt;/strong>&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>Language&lt;/th>
+&lt;th>files&lt;/th>
+&lt;th>blank&lt;/th>
+&lt;th>comment&lt;/th>
+&lt;th>code&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>C++&lt;/td>
+&lt;td>103&lt;/td>
+&lt;td>2420&lt;/td>
+&lt;td>533&lt;/td>
+&lt;td>13073&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Lua&lt;/td>
+&lt;td>116&lt;/td>
+&lt;td>510&lt;/td>
+&lt;td>154&lt;/td>
+&lt;td>5071&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>C/C++ header&lt;/td>
+&lt;td>123&lt;/td>
+&lt;td>1386&lt;/td>
+&lt;td>158&lt;/td>
+&lt;td>4315&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;p>&lt;strong>22.02.2017&lt;/strong>&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>Language&lt;/th>
+&lt;th>files&lt;/th>
+&lt;th>blank&lt;/th>
+&lt;th>comment&lt;/th>
+&lt;th>code&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>C++&lt;/td>
+&lt;td>109&lt;/td>
+&lt;td>1938&lt;/td>
+&lt;td>330&lt;/td>
+&lt;td>10590&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Lua&lt;/td>
+&lt;td>127&lt;/td>
+&lt;td>706&lt;/td>
+&lt;td>135&lt;/td>
+&lt;td>5167&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>C/C++ header&lt;/td>
+&lt;td>133&lt;/td>
+&lt;td>1296&lt;/td>
+&lt;td>90&lt;/td>
+&lt;td>4014&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;p>Note, that even though I&amp;rsquo;ve added a lot of new code, the resulting code is still smaller. And Lua code became larger just by 100 lines, even though I moved a lot of C++ code here! This may also look as a little work was done, but &lt;code>git diff&lt;/code> between commits made in December and March results in this:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sh" data-lang="sh">&lt;span style="color:#099">460&lt;/span> files changed, &lt;span style="color:#099">14486&lt;/span> insertions&lt;span style="font-weight:bold">(&lt;/span>+&lt;span style="font-weight:bold">)&lt;/span>, &lt;span style="color:#099">16035&lt;/span> deletions&lt;span style="font-weight:bold">(&lt;/span>-&lt;span style="font-weight:bold">)&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>That&amp;rsquo;s a lot of changes!&lt;/p>
+&lt;p>All game-specific components are now in Lua. For example, inventory, health components and others can be implemented in Lua efficiently because I don&amp;rsquo;t have to iterate them in tight loops in every frame. They&amp;rsquo;re mostly used for some basic logic and data storage. Only the following components are implemented in C++ now: Transform, Hierarchy, Graphics, Movement, Sound. As you can see, these components are pretty low-level and are mostly not tied to my game at all, which is great.
+Here&amp;rsquo;s an example of a game specific component defined in Lua:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-lua" data-lang="lua">&lt;span style="color:#998;font-style:italic">-- ItemComponent.lua&lt;/span>
+&lt;span style="font-weight:bold">local&lt;/span> Component &lt;span style="font-weight:bold">=&lt;/span> require(&lt;span style="color:#b84">&amp;#34;Component&amp;#34;&lt;/span>)
+&lt;span style="font-weight:bold">local&lt;/span> ItemComponent &lt;span style="font-weight:bold">=&lt;/span> Component:subclass(&lt;span style="color:#b84">&amp;#34;ItemComponent&amp;#34;&lt;/span>)
+&lt;span style="font-weight:bold">function&lt;/span> &lt;span style="color:#458;font-weight:bold">ItemComponent&lt;/span>:&lt;span style="color:#900;font-weight:bold">initialize&lt;/span>()
+Component:initialize()
+self.value &lt;span style="font-weight:bold">=&lt;/span> &lt;span style="color:#099">0&lt;/span>
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;span style="font-weight:bold">function&lt;/span> &lt;span style="color:#458;font-weight:bold">ItemComponent&lt;/span>:&lt;span style="color:#900;font-weight:bold">loadData&lt;/span>(data)
+&lt;span style="font-weight:bold">if&lt;/span> data.value &lt;span style="font-weight:bold">then&lt;/span>
+self.value &lt;span style="font-weight:bold">=&lt;/span> data.value
+&lt;span style="font-weight:bold">end&lt;/span>
+self.name &lt;span style="font-weight:bold">=&lt;/span> data.name
+self.description &lt;span style="font-weight:bold">=&lt;/span> self.description
+self.iconName &lt;span style="font-weight:bold">=&lt;/span> data.iconName
+self.onEquipFunc &lt;span style="font-weight:bold">=&lt;/span> data.onEquip
+self.onUnequipFunc &lt;span style="font-weight:bold">=&lt;/span> data.onUnequip
+self.useFunc &lt;span style="font-weight:bold">=&lt;/span> data.use
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;span style="font-weight:bold">function&lt;/span> &lt;span style="color:#458;font-weight:bold">ItemComponent&lt;/span>:&lt;span style="color:#900;font-weight:bold">use&lt;/span>(itemOwner)
+&lt;span style="font-weight:bold">if&lt;/span> self.useFunc &lt;span style="font-weight:bold">then&lt;/span>
+self:useFunc(itemOwner)
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;span style="font-weight:bold">function&lt;/span> &lt;span style="color:#458;font-weight:bold">ItemComponent&lt;/span>:&lt;span style="color:#900;font-weight:bold">onEquip&lt;/span>(itemOwner)
+&lt;span style="font-weight:bold">if&lt;/span> self.onEquipFunc &lt;span style="font-weight:bold">then&lt;/span>
+self:onEquipFunc(itemOwner)
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;span style="font-weight:bold">function&lt;/span> &lt;span style="color:#458;font-weight:bold">ItemComponent&lt;/span>:&lt;span style="color:#900;font-weight:bold">onUnequip&lt;/span>(itemOwner)
+&lt;span style="font-weight:bold">if&lt;/span> self.onUnequipFunc &lt;span style="font-weight:bold">then&lt;/span>
+self:onUnequipFunc(itemOwner)
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;span style="font-weight:bold">function&lt;/span> &lt;span style="color:#458;font-weight:bold">ItemComponent&lt;/span>:&lt;span style="color:#900;font-weight:bold">getIconName&lt;/span>()
+&lt;span style="font-weight:bold">return&lt;/span> self.iconName
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;span style="font-weight:bold">return&lt;/span> ItemComponent
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>I also moved all of GUI logic to Lua too. The most complex GUI is dialogue GUI. It does a lot of stuff: it displays text character by character, speaking entity&amp;rsquo;s portrait; highlights some words, handles player&amp;rsquo;s choice in dialogues. I didn&amp;rsquo;t think that moving it to Lua would be real as the logic was pretty complex&amp;hellip; but I managed to do it! Here&amp;rsquo;s a reminder of how many things happen in dialogues:&lt;/p>
+&lt;figure>&lt;img src="dialogue-cat.gif"/>&lt;figcaption>
+&lt;h4>Dialogue example&lt;/h4>
+&lt;/figcaption>
+&lt;/figure>
+&lt;p>Now &lt;code>GuiState&lt;/code> in C++ just iterates over all GUIs in GUI stack and just calls update and draw functions, not caring about game-specific things. Oh yeah, I now have GUI stack, so I can implement complex GUI&amp;rsquo;s which stack on top of each other (e.g. pause screen GUI on top of game GUI)&lt;/p>
+&lt;p>By moving some components and all GUI stuff to Lua I finished a pretty important thing: all the game logic is in Lua now! Absolutely everything! This makes me incredibly happy and lets me easily implement new things without caring how Lua and C++ will interact. And another great thing is that the code is now easier to read and it 2-3 times smaller!&lt;/p>
+&lt;p>I also implemented game mode stack in Lua, which was previously handled in C++. This means that I can easily create new game modes without touching any C++ code.&lt;/p>
+&lt;p>This makes my engine a lot more generic and separates it from the game, which is great. This means that I can easily reuse my engine in other projects later: I&amp;rsquo;ll just have to change scripts and resources and most of the C++ code will remain the same. I will probably explain my current engine structure a bit later, once I&amp;rsquo;m 100% confident that it works great.&lt;/p>
+&lt;h2 id="gui">GUI&lt;/h2>
+&lt;p>Let&amp;rsquo;s talk about GUI a bit more. First of all, now there&amp;rsquo;s a good parent-child relation between elements. I store child offset relative to parent, so I can easily group and move things together. For example, a portrait of talker is a child of a dialogue window and its relative position to the border of the window is (6,8). So if I render the dialogue window at (100, 200), I&amp;rsquo;ll render the dialogue portait at (106, 208) by combining local child&amp;rsquo;s transform and parent&amp;rsquo;s transform.&lt;/p>
+&lt;p>I also implemented nine-patch windows. Previously I just stored a big sprites of windows, but now I can just store them like this:&lt;/p>
+&lt;figure>&lt;img src="gui-nine-patch.png"/>&lt;figcaption>
+&lt;h4>Nine-patch texture&lt;/h4>
+&lt;/figcaption>
+&lt;/figure>
+&lt;p>and with some texture repeating, flipping and mirroring, I can get the dialogue window!
+&lt;figure>&lt;img src="dialogue-window.png"/>&lt;figcaption>
+&lt;h4>Resulting dialogue box&lt;/h4>
+&lt;/figcaption>
+&lt;/figure>
+This not only saves texture space, but also allows me to easily create windows of different sizes.&lt;/p>
+&lt;h2 id="some-small-c-related-refactorings">Some small C++ related refactorings&lt;/h2>
+&lt;ul>
+&lt;li>Added lots of &lt;code>const&lt;/code> where possible. The game was const correct most of the time, but there are quite a few places where I made non-const local variables which don&amp;rsquo;t change or failed to make some member function const, which they later became with some effort. Turns out that most of the time the things stay constant and very few things change, that&amp;rsquo;s why having most of the stuff const is great: you can easily see things that &lt;strong>do&lt;/strong> change.&lt;/li>
+&lt;li>Stopped passing pointers in most functions and now pass everything by reference unless the pointer is really needed. A lot of this was in very old code, when I didn&amp;rsquo;t realize how perfect references are.&lt;/li>
+&lt;li>Started using &lt;code>std::reference_wrapper&lt;/code> instead of raw non-owning pointers for storing references to stuff in &lt;code>std::vector&lt;/code>. This is a very useful indicator of &amp;ldquo;hey, this is just a reference!&amp;rdquo;&lt;/li>
+&lt;li>Stopped handling each axis separately in some places, making changes like this:&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp">someX &lt;span style="font-weight:bold">=&lt;/span> otherX &lt;span style="font-weight:bold">+&lt;/span> &lt;span style="color:#099">5&lt;/span>;
+someY &lt;span style="font-weight:bold">=&lt;/span> otherY &lt;span style="font-weight:bold">+&lt;/span> &lt;span style="color:#099">10&lt;/span>;
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>and now I do this instead:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp">someVector &lt;span style="font-weight:bold">+=&lt;/span> otherVector &lt;span style="font-weight:bold">+&lt;/span> sf&lt;span style="font-weight:bold">::&lt;/span>Vector2f(&lt;span style="color:#099">5&lt;/span>, &lt;span style="color:#099">10&lt;/span>);
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>I used a lot of vectors before, but there were still places where I did computations for each vector&amp;rsquo;s coordinate or stored coordinates in two variables. It was pretty dumb, because most of the time you do the same thing for both X and Y, and duplicating the same code is not smart.&lt;/p>
+&lt;ul>
+&lt;li>Introduced lots of type aliases, for example &lt;code>TileIndex&lt;/code> instead of &lt;code>sf::Vector2i&lt;/code>, &lt;code>ComponentList&lt;/code> instead of &lt;code>std::vector&amp;lt;std::reference_wrapper&amp;lt;Component&amp;gt;&amp;gt;&lt;/code> and so on (wish there were strong typedefs in C++!). This made code much more readable, because it leaves you with less information and most of the time I just don&amp;rsquo;t care about the underlying type, I care about it&amp;rsquo;s meaning.&lt;/li>
+&lt;/ul>
+&lt;h2 id="levels-and-tile-maps">Levels and tile maps&lt;/h2>
+&lt;p>A huge effort was put into remaking tile map system. Previously each tile map was a grid of chunks (each 8x8 tiles in size). This allowed me to save some space by not having to store a lot of empty tiles. But the data structure was pretty complicated. I used &lt;code>std::vector&amp;lt;std::vector&amp;lt;TilemapChunk&amp;gt;&amp;gt;&lt;/code> and so if some chunks were stored in negative coordinates, I had to store index of top-left chunk and make sure to keep it in mind when accessing other chunks, because I couldn&amp;rsquo;t store negative indices in &lt;code>std::vector&amp;lt;std::vector&amp;lt;TilemapChunk&amp;gt;&amp;gt;&lt;/code>. So, if &lt;code>minChunkIndex&lt;/code> was (-10, -20), I found real index of (-3, -4) chunk in vector of vectors by removing &lt;code>minChunkIndex&lt;/code>: (-3, -4) - (-10, -20) = (7, 16)&lt;/p>
+&lt;p>It wasn&amp;rsquo;t very good system for various reasons, so I implemented a simpler structure: &lt;code>std::unordered_map&amp;lt;ChunkIndex, LevelChunk&amp;gt;&lt;/code> (&lt;code>ChunkIndex&lt;/code> is &lt;code>sf::Vector2i&lt;/code>). Now I don&amp;rsquo;t have to store &lt;code>minChunkIndex&lt;/code> and formulas are simplified. I also don&amp;rsquo;t waste space on empty chunks, which is another advantage of new system. It&amp;rsquo;s similar to implementing sparse matrices: instead of having large 2D array, I only store elements which are not zero (not empty in case of tile chunks).&lt;/p>
+&lt;p>I also improved a lot of level editor code by completely removing all duplication, encapsulation breaks, etc. I previously thought like this:&amp;ldquo;It&amp;rsquo;s just a development tool, it doesn&amp;rsquo;t have to have very good code!&amp;rdquo;, but turns out that code here matters very much too! First of all, duplication is always bad. Secondly, encapsulation breaks make changes to other classes much harder.&lt;/p>
+&lt;p>Thankfully, there weren&amp;rsquo;t much such breaks and I actually made a post previously about how having &lt;code>TileMap::setTile&lt;/code> function saved me a lot of time, as I could easily change data structures of level without having to modify level editor code. But there were still some places in which I had to access some private parts of &lt;code>TileMap&lt;/code>. So I made a lot of getters and setters. And it made &lt;code>TileMap&lt;/code> class not properly encapsulated and much longer than it needed to be. So I found a great alternative.&lt;/p>
+&lt;p>&lt;a href="https://en.wikibooks.org/wiki/More_C%2B%2B_Idioms/Friendship_and_the_Attorney-Client">Attorney-Client pattern&lt;/a> is a great way of solving this problem. Basically, I let some encapsulation breaks by creating LevelModifier structure and making it a friend of TileMap and other level related classes. Now if I need to create an encapsulation breaking function, I create something like this:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp">&lt;span style="color:#458;font-weight:bold">void&lt;/span> LevelModifier&lt;span style="font-weight:bold">::&lt;/span>setTile(Tilemap&lt;span style="font-weight:bold">&amp;amp;&lt;/span> tilemap, &lt;span style="color:#998;font-style:italic">/* other args */&lt;/span>)
+{
+... &lt;span style="color:#998;font-style:italic">// can access private data members and member functions of TileMap
+&lt;/span>&lt;span style="color:#998;font-style:italic">&lt;/span>}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>This function is static, so I can later call it in LevelEditor like this:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp">&lt;span style="font-weight:bold">if&lt;/span> (&lt;span style="color:#998;font-style:italic">/* left mouse button clicked */&lt;/span>) {
+LevelModifier&lt;span style="font-weight:bold">::&lt;/span>setTile(tileMap, selectedTile);
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Awesome. In fact, the number of such encapsulation functions is just 10. Pretty low and easily controllable. If I find myself in a situation where I had to change TileMap class considerably, I&amp;rsquo;ll be confident that I&amp;rsquo;ll have to deal with breaking changes in just a few functions.&lt;/p>
+&lt;p>After this experience, I wondered how many functions of other classes I can make private. Previously I made them public by default for some reason, even if they were only called in member functions of this class. I managed to make quite a lot functions private without making significant changes to any code and improved encapsulation by doing so. There&amp;rsquo;s a small advantage to it: I can be sure that changing private function of the class won&amp;rsquo;t need many changes in other places.&lt;/p>
+&lt;p>Back to levels. Previously all entity positions were stored in a level file and during level loading I just created each entity and placed them in the right spots of the map. This made some things pretty hard to load/save. I had to store position where entity spawned, I had to know if some entity will be saved to level file or not, etc.&lt;/p>
+&lt;p>But then I realized one simple thing: what I considered &amp;ldquo;entity info&amp;rdquo; in level files was actually &amp;ldquo;spawn points info&amp;rdquo;. So if I just stored info about spawn points in tile map, I could then easily spawn entities with them later and also change them in level editor, instead of working with concrete entity instances. So, when I move entity in level editor, I don&amp;rsquo;t just move instance of this entity, but also its corresponding spawn point.&lt;/p>
+&lt;p>It&amp;rsquo;s just separation of concerns. Entity doesn&amp;rsquo;t have to know about it&amp;rsquo;s spawn point most of the time. And when I save level, I don&amp;rsquo;t care about particular entities, I just care about spawn points. I can iterate through them and just save their properties. Restoring initial level state is also easier: I can just remove all entities and spawn new ones using spawn points.&lt;/p>
+&lt;p>Trying to restore each entity&amp;rsquo;s initial state is more error prone. I guess this method of doing things explains bugs with saves in some games. In Fallout: New Vegas some NPCs may become hostile and attack you because of your actions, and after you reload your save, they may still attack you, even though in the loaded save state they were neutral to you! Probably this is explained by a bug when restoring entity&amp;rsquo;s state, if you reload the game, the game works as usual.&lt;/p>
+&lt;p>I also started storing tile maps in JSON. Previously I stored them in a custom plain text format, but as the format got progressively harder to maintain (lots of parsing/saving code), I remade the whole thing in JSON. The code is much simpler to read and expand, so it&amp;rsquo;s great!&lt;/p>
+&lt;p>Another thing I made is ability to hold mouse button down and paint tiles. Yes, this seems like a very easy thing to implement, but it wasn&amp;rsquo;t! I had to make sure that I could properly undo this action, create new level chunks on the fly, etc. And now I can easily create maps in any direction with this feature:&lt;/p>
+&lt;figure>&lt;img src="infinite-maps.gif"/>
+&lt;/figure>
+&lt;h2 id="child-parent-hierarchy-and-relative-transforms">Child-parent hierarchy and relative transforms&lt;/h2>
+&lt;p>Okay, if I made a more complex game, I would have made this a lot earlier, but here we go. Look at the gif:&lt;/p>
+&lt;figure>&lt;img src="child-parent.gif"/>&lt;figcaption>
+&lt;h4>Child-parent example&lt;/h4>
+&lt;/figcaption>
+&lt;/figure>
+&lt;p>Hat entity is a child of Renatus entity. Renatus is a child of moving platform entity. This simple hierarchy is easy to handle: the only thing that moves is a platform. It stores coordinate of Renatus relative to it and uses it for relative movement. As Renatus gets moved, the hat moves by the same offset as well. The system is very easy, I just traverse through hierarchy and apply the same movement delta to each entity.&lt;/p>
+&lt;p>One small thing had given me lots of headache: sometimes the relative movement was a bit shaky. It was because of float rounding, the picture explains the problem:
+&lt;img src="https://eliasdaler.github.io/hugo-test/assets/re_creation_dev_log_dec_march/floor_problem.png" alt="Floor problem">
+&lt;figure>&lt;img src="floor-problem.png"/>
+&lt;/figure>
+In the example both entities move by 0.2 pixels, but due to rounding on the screen, you can see a gap between the two appearing. This was unacceptable!&lt;/p>
+&lt;p>Check out the &lt;a href="https://en.sfml-dev.org/forums/index.php?topic=21626">thread I made about this&lt;/a>, if you&amp;rsquo;re interested in my solution. There were some interesting points made in the thread as well.&lt;/p>
+&lt;h2 id="other-small-things">Other small things&lt;/h2>
+&lt;p>And here are some other small things which I don&amp;rsquo;t want to write about, but if you&amp;rsquo;re interested in some, feel free to ask about them!&lt;/p>
+&lt;ul>
+&lt;li>Previously all side animations had copies in a sprite sheet (e.g. left and right walking animations). Now I just flip them on GPU by setting texture rect&amp;rsquo;s width to be negative, when I want to flip animation. I&amp;rsquo;ll be doing the same with mirrored/rotated tiles a bit later.&lt;/li>
+&lt;li>Stupid collision optimization: I stopped checking collisions between static entities. There&amp;rsquo;s no need to check if static, unmovable tree collides with house or not. Both entities can&amp;rsquo;t move The number of collision checks reduced greatly in the result and collision is very fast now.&lt;/li>
+&lt;li>Started using entity handles (see &lt;a href="https://eliasdaler.github.io/game-object-references/">my article&lt;/a> about them)&lt;/li>
+&lt;li>Camera is an entity now. Of course, it has properties of an entity: transform, movement component, AI component (used for following the path). So I don&amp;rsquo;t have to rewrite the same code twice and can script all camera logic in Lua.&lt;/li>
+&lt;li>Started using seconds instead of milliseconds everywhere. &lt;code>sf::Time::asSeconds&lt;/code> returns a &lt;code>float&lt;/code>, while &lt;code>sf::Time::asMilliseconds&lt;/code> returns a rounded &lt;code>int&lt;/code> (usually 16, corresponding to 60 FPS), the results are terrible for pixel perfect games, especially during camera scrolling. It results in camera having non-smooth movement, which has been a problem I was trying to fix for ages and finally did with such a simple change. Here&amp;rsquo;s &lt;a href="https://plus.google.com/+flibitijibibo/posts/PysMth9Y5kN">a post about the similar problem which FEZ apparently also had&lt;/a> which inspired me to do this.&lt;/li>
+&lt;li>Made some multi-threading during loading. Basically, I can do most of the loading in another thread: sounds, scripts, level data, etc. But not textures, because OpenGL is not multi-threaded. The solution is simple: I load textures in RAM first and then move them to GPU in a main thread. It blocks the main thread, but it&amp;rsquo;s pretty fast and not really noticeable.&lt;/li>
+&lt;li>Worked on diagonal collision. I previously worked on it, but it was very buggy, as the player could get stuck between tiles (I noticed that some SNES and GBA games have this problem, e.g. Earthbound, Mother 3). But I fixed it! I hope that I&amp;rsquo;ll never have to deal with tile collision in the near future. It&amp;rsquo;s so hard!&lt;/li>
+&lt;/ul>
+&lt;figure>&lt;img src="tile-collision.gif"/>
+&lt;/figure>
+&lt;p>There are probably a lot of things I missed, but I hope that it&amp;rsquo;s enough to show you how much stuff I&amp;rsquo;ve done.&lt;/p>
+&lt;h2 id="conclusion-and-plans">Conclusion and plans&lt;/h2>
+&lt;p>This semester is very intense. Lots of homework, project assignments and so on. This was the reason I stopped working on a game for a 1.5 months and probably won&amp;rsquo;t be working on it for another two and a half.&lt;/p>
+&lt;p>In the meantime, I will be doing small things about the game which don&amp;rsquo;t require coding: improve plot, think about game mechanics and puzzles, limit my scope, etc. I also plan to read stuff about game development and think how I can further improve my code and engine structure. It&amp;rsquo;s not the main priority now, however. I&amp;rsquo;m mostly happy with most of my code and don&amp;rsquo;t think that a huge changes will come.&lt;/p>
+&lt;p>What I want to have in the future is a stable foundation. You know, just some level with a lot of things going on: AI, NPCs, complex tile map, basic combat, particles and so on. A vertical slice of the game, working just fine. The confidence in the code base: that it works well and doesn&amp;rsquo;t require me write a lot of boilerplate code and that I&amp;rsquo;m not limited by it. Good resource system, neat organization in files, smooth content creation and so on.&lt;/p>
+&lt;p>These are some things which take a lot of time, but once they&amp;rsquo;re achieved, they can provide a lot of confidence and comfort in the future and save me from having to change a lot of things at once.&lt;/p>
+&lt;p>Don&amp;rsquo;t worry about the project: I&amp;rsquo;ve taken a few breaks from it before and coming back was as exciting as ever. As the time goes on, I don&amp;rsquo;t lose any motivation or confidence in it, in fact I love it more and more. And some of you may be disappointed in my slow progress, and I&amp;rsquo;m sorry for it, but not rushing is what makes it such a nice experience for me. And hey, even if you don&amp;rsquo;t get the playable game in the end, you can still learn something from my dev logs and tutorials. If I didn&amp;rsquo;t spend lots of time reiterating, researching, refactoring, I would have never figured out a lot of things which helped a lot of people.&lt;/p>
+&lt;p>One more thing: art, dialogue, plot, atmosphere and whole concept just got a lot better as the time went by. If I finished the game with the art, plot and gameplay it had two years ago, it would not be very good. But as my skills improve, I apply them to the game and make it considerably better than before.&lt;/p>
+&lt;p>Thanks for reading!&lt;/p></description></item><item><title>Making and storing references to game objects (entities) in C++ and Lua</title><link>https://eliasdaler.github.io/hugo-test/posts/game-object-references/</link><pubDate>Sun, 22 Jan 2017 14:00:00 +0300</pubDate><guid>https://eliasdaler.github.io/hugo-test/posts/game-object-references/</guid><description>&lt;div>
 &lt;h2>Table Of Contents&lt;/h2>
 &lt;nav id="TableOfContents">
 &lt;ul>
