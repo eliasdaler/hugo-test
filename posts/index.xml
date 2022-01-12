@@ -4,4 +4,19 @@
 &lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#66d9ef">nil&lt;/span>
 }
 }
-&lt;/code>&lt;/pre>&lt;/div></description></item></channel></rss>
+&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>CppCast</title><link>https://eliasdaler.github.io/hugo-test/posts/cppcast/</link><pubDate>Sat, 09 Jul 2016 01:05:00 +0300</pubDate><guid>https://eliasdaler.github.io/hugo-test/posts/cppcast/</guid><description>&lt;p>&lt;img src="cppcast.jpg" alt="Me on CppCast">&lt;/p>
+&lt;p>I recently gave an interview on &lt;strong>CppCast&lt;/strong>!
+Listen to it &lt;a href="http://cppcast.com/2016/07/elias-daler">here&lt;/a>.&lt;/p>
+&lt;p>Here are my some thoughts about CppCast and the episode.&lt;/p>
+&lt;p>&lt;!-- raw HTML omitted -->&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;h2 id="about-cppcast">About CppCast&lt;/h2>
+&lt;p>If you&amp;rsquo;re never heard of &lt;strong>CppCast&lt;/strong> before - it&amp;rsquo;s one of the most amazing podcasts ever! The guests are always interesting and the discussions are very informative. The hosts know what to ask and what to talk about - they&amp;rsquo;re C++ developers themselves.
+They also get awesome guests on the show. For example, there are episodes with people like &lt;a href="http://cppcast.com/2015/09/scott-meyers/">Scott Meyers&lt;/a>, &lt;a href="http://cppcast.com/2015/10/andrei-alexandrescu/">Andrei Alexandrescu&lt;/a> and &lt;a href="http://cppcast.com/2016/06/herb-sutter/">Herb Sutter&lt;/a>. These people are my heroes of programming, so it&amp;rsquo;s a big pleasure to be interviewed on the podcast of that caliber.&lt;/p>
+&lt;h2 id="episode-with-me">Episode with me&lt;/h2>
+&lt;p>I&amp;rsquo;ve never expected to be on the show so soon. I&amp;rsquo;ve joked about it: &amp;ldquo;Ah, I&amp;rsquo;ll be there in &lt;em>X&lt;/em> years when I get really successful&amp;rdquo;. It&amp;rsquo;s a big honor for me and I&amp;rsquo;m very thankful for Rob and Jason for making my dream of being on podcast come true.&lt;/p>
+&lt;p>I&amp;rsquo;m sorry if I come of kinda derpy or awkward at times during the interview. First of all, I was pretty nervous and secondly, English is not my native language and I don&amp;rsquo;t speak in it in real life at all.
+But still, I think I did pretty well and we discussed lots of neat stuff during the episode.&lt;/p>
+&lt;h2 id="if-you-want-to-learn-about-luac-integration-andor-read-my-other-blog-posts">If you want to learn about Lua/C++ integration and/or read my other blog posts&lt;/h2>
+&lt;p>This is my new blog, so check out my &lt;a href="https://eliasdaler.wordpress.com">old blog&lt;/a> for all the mentioned articles. If you want to start with Lua and C++, check out &lt;a href="https://eliasdaler.wordpress.com/2014/07/18/using-lua-with-cpp-luabridge/">LuaBridge tutorial&lt;/a> (though I recommend to use &lt;a href="https://github.com/ThePhD/sol2">sol2&lt;/a> as a binding library). If you want to see how you can use Lua in Practice, check out &lt;a href="https://eliasdaler.wordpress.com/2015/08/10/using-lua-and-cpp-in-practice/">Using Lua in practice&lt;/a> articles (there are five of them!). And check out &lt;a href="https://eliasdaler.wordpress.com/tag/dev-log/">Re:creation dev logs&lt;/a> for in-depth explanation of what I did about the game and how I make my game engine.&lt;/p>
+&lt;p>The new articles are coming very soon, check out what I&amp;rsquo;m planning to write &lt;a href="https://eliasdaler.github.io/first-post">here&lt;/a> (I promised that there&amp;rsquo;ll be some when the podcast airs, but I didn&amp;rsquo;t think that episode will come out so soon, so sorry about that). I think these articles will be even better, there&amp;rsquo;s a lot of things I&amp;rsquo;ve learned during the last few years.&lt;/p>
+&lt;p>Thanks for reading and listening. Please let me know what you thought of the episode in the comments!&lt;/p></description></item></channel></rss>
