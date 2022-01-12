@@ -2,3 +2,4 @@ baseURL = 'https://eliasdaler.github.io/hugo-test/'
 languageCode = 'en-us'
 title = 'Elias Daler blog'
 theme = "etch"
+markup.highlight.style='trac'
