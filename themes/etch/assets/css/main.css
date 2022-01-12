@@ -11,10 +11,10 @@ body {
     font-size: 1.6rem;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
     color: #313a3d;
-    width: 100%;
     margin: 0 auto;
     padding: 0 16px;
-    line-height: 1.6;
+    line-height: 1.4;
+    max-width: 75rem;
 }
 
 header#banner {
@@ -253,12 +253,7 @@ main#content blockquote {
 
 main#content code,
 main#content pre {
-    font-family: 'Menlo', monospace;
-}
-
-main#content code {
-    font-size: 0.96em;
-    padding: 0 5px;
+    font-family: monospace;
 }
 
 main#content pre {
@@ -272,16 +267,14 @@ main#content pre {
     line-height: 1.4;
 }
 
-main#content pre code {
-    padding: 0;
-}
-
 main#content div.highlight pre {
     border: 1px solid;
 }
 
 main#content p code {
     background-color: #f6f6f6;
+    padding: .2em .4em;
+    font-size: 90%;
 }
 
 main#content section.footnotes {
