@@ -1,10 +1,228 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Tags on Elias Daler's blog</title><link>https://eliasdaler.github.io/hugo-test/tags/</link><description>Recent content in Tags on Elias Daler's blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Sun, 27 Nov 2016 15:00:00 +0300</lastBuildDate><atom:link href="https://eliasdaler.github.io/hugo-test/tags/index.xml" rel="self" type="application/rss+xml"/><item><title>My First Post</title><link>https://eliasdaler.github.io/hugo-test/posts/my-first-post/</link><pubDate>Wed, 12 Jan 2022 14:22:34 +0300</pubDate><guid>https://eliasdaler.github.io/hugo-test/posts/my-first-post/</guid><description>&lt;p>Hello world.&lt;/p>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Tags on Elias Daler's blog</title><link>https://eliasdaler.github.io/hugo-test/tags/</link><description>Recent content in Tags on Elias Daler's blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Sun, 22 Jan 2017 14:00:00 +0300</lastBuildDate><atom:link href="https://eliasdaler.github.io/hugo-test/tags/index.xml" rel="self" type="application/rss+xml"/><item><title>My First Post</title><link>https://eliasdaler.github.io/hugo-test/posts/my-first-post/</link><pubDate>Wed, 12 Jan 2022 14:22:34 +0300</pubDate><guid>https://eliasdaler.github.io/hugo-test/posts/my-first-post/</guid><description>&lt;p>Hello world.&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="font-weight:bold">func&lt;/span> &lt;span style="color:#900;font-weight:bold">x&lt;/span>() {
 &lt;span style="font-weight:bold">if&lt;/span> x &lt;span style="font-weight:bold">==&lt;/span> &lt;span style="color:#099">5&lt;/span> {
 &lt;span style="font-weight:bold">return&lt;/span> &lt;span style="font-weight:bold">nil&lt;/span>
 }
 }
-&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>Re:creation dev log. July - November 2016</title><link>https://eliasdaler.github.io/hugo-test/posts/re-creation-devlog-july-november2016/</link><pubDate>Sun, 27 Nov 2016 15:00:00 +0300</pubDate><guid>https://eliasdaler.github.io/hugo-test/posts/re-creation-devlog-july-november2016/</guid><description>&lt;p>The last five months were really important for the game. It finally feels like I can work on the game itself now, not just the engine and basic systems which will let me implement different stuff in the game. It&amp;rsquo;s not just abstract stuff, stuff which I do &amp;ldquo;just in case&amp;rdquo;. No, I try to be pragmatic and implement things which are needed for the game and which will let me create stuff without much restrictions.&lt;/p>
+&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>Making and storing references to game objects (entities) in C++ and Lua</title><link>https://eliasdaler.github.io/hugo-test/posts/game-object-references/</link><pubDate>Sun, 22 Jan 2017 14:00:00 +0300</pubDate><guid>https://eliasdaler.github.io/hugo-test/posts/game-object-references/</guid><description>&lt;div>
+&lt;h2>Table Of Contents&lt;/h2>
+&lt;nav id="TableOfContents">
+&lt;ul>
+&lt;li>&lt;a href="#introduction">Introduction&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#shared_ptr-and-weak_ptr">shared_ptr and weak_ptr&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#using-unique-ids">Using unique ids&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#storing-references-to-entities-in-lua">Storing references to entities in Lua&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/nav>
+&lt;/div>
+&lt;h2 id="introduction">Introduction&lt;/h2>
+&lt;figure>&lt;img src="ids.png"/>
+&lt;/figure>
+&lt;p>The problem of handling references to game objects (I&amp;rsquo;ll call them &lt;em>entities&lt;/em>) comes up very often. Sometimes it&amp;rsquo;s child-parent relationship between the entities, sometimes it&amp;rsquo;s useful to store a reference to an object in event data, some task scheduling class and so on.&lt;/p>
+&lt;p>Sometimes a simple pointer, reference or &lt;code>std::reference_wrapper&lt;/code> is enough. But the problem with raw pointers and references is that once you use them, you have to make sure that the entity which is being referenced stays alive and is not moved in memory without notifying objects which hold references. And with good design you&amp;rsquo;ll probably be able to achieve that.&lt;/p>
+&lt;p>But stale pointers/references give some of the worst bugs, which are difficult to track, crash your game and may not be easily identifiable. Some entities may start to occupy different addresses in memory (for example, after you reload a level and decide to create all entities from scratch). While it&amp;rsquo;s possible to manually update all pointers to previously referenced entities, it&amp;rsquo;s certainly will be better to do so automatically and without a chance of forgetting some pointers which will be stale.&lt;/p>
+&lt;p>Let&amp;rsquo;s see all these problems can be solved. The latest solution (about storing references to Lua) was discovered by me not long ago and it is the point of me writing the article, but I want to show some other ways of solving the problem. Let&amp;rsquo;s start!&lt;/p>
+&lt;h2 id="shared_ptr-and-weak_ptr">shared_ptr and weak_ptr&lt;/h2>
+&lt;p>Some of the problems with raw references can be solved with &lt;code>std::shared_ptr&lt;/code> and &lt;code>std::weak_ptr&lt;/code>. First, you create your entities as with &lt;code>std::make_shared&lt;/code>. After that you&amp;rsquo;ll create all references to it with &lt;code>std::weak_ptr&lt;/code>s which won&amp;rsquo;t affect your entity&amp;rsquo;s lifetime. After that you can use &lt;code>std::weak_ptr&amp;lt;T&amp;gt;::expired&lt;/code> function to check if the reference is still valid.&lt;/p>
+&lt;p>The solution is not perfect. First of all, it requires you to create all your entities as &lt;code>shared_ptr&lt;/code>s which may have some significant overhead compared to &lt;code>unique_ptr&lt;/code>s. And after all, it&amp;rsquo;s better for the lifetime of entities not to be shared and that semantic is better expressed with &lt;code>unique_ptr&lt;/code>. Shared pointers also don&amp;rsquo;t solve the problem of moving entities in memory: you can&amp;rsquo;t swap what&amp;rsquo;s inside the &lt;code>shared_ptr&lt;/code> and have all &lt;code>weak_ptr&lt;/code>s automatically update their pointers.&lt;/p>
+&lt;h2 id="using-unique-ids">Using unique ids&lt;/h2>
+&lt;p>One solution to the problem is just creating unique ids for entities and storing those ids instead of raw pointers or references. There a lots of ways to generate and represent entity ids. Ids can just be integers with &lt;code>EntityManager&lt;/code> having a counter which will be incremented as new entities are created: the first entity will get id=0, the second one id=1 and so on. Another way to generate ids is to use some hashing algorithm or &lt;a href="https://en.wikipedia.org/wiki/Universally_unique_identifier">UUID&lt;/a>s. No matter what, your ids should stay unique, unless you add some additional info (like entity creation time or some tags) to your id.&lt;/p>
+&lt;p>Here&amp;rsquo;s how your &lt;code>EntityManager&lt;/code> class may look:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp">&lt;span style="font-weight:bold">class&lt;/span> &lt;span style="color:#458;font-weight:bold">EntityManager&lt;/span> {
+&lt;span style="font-weight:bold">public&lt;/span>&lt;span style="font-weight:bold">:&lt;/span>
+Entity&lt;span style="font-weight:bold">*&lt;/span> getEntity(EntityId id) &lt;span style="font-weight:bold">const&lt;/span>;
+&lt;span style="color:#458;font-weight:bold">bool&lt;/span> &lt;span style="color:#900;font-weight:bold">entityExists&lt;/span>(EntityId id) &lt;span style="font-weight:bold">const&lt;/span>;
+&lt;span style="color:#998;font-style:italic">// ...
+&lt;/span>&lt;span style="color:#998;font-style:italic">&lt;/span>&lt;span style="font-weight:bold">private&lt;/span>&lt;span style="font-weight:bold">:&lt;/span>
+std&lt;span style="font-weight:bold">::&lt;/span>unordered_map&lt;span style="font-weight:bold">&amp;lt;&lt;/span>EntityId, std&lt;span style="font-weight:bold">::&lt;/span>unique_ptr&lt;span style="font-weight:bold">&amp;lt;&lt;/span>Entity&lt;span style="font-weight:bold">&amp;gt;&amp;gt;&lt;/span> entities;
+&lt;span style="color:#998;font-style:italic">// ...
+&lt;/span>&lt;span style="color:#998;font-style:italic">&lt;/span>};
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Using ids also helps with recreation problem: you can easily reload/recreate the entity and just assign the same id to it as before. It will have a different adress in memory, but the next time someone calls &lt;code>getEntity&lt;/code> the updated entity is returned. You can also easily send these ids over the network or save them in your save files.&lt;/p>
+&lt;p>Your code when using entity id becomes something like this:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp">&lt;span style="font-weight:bold">auto&lt;/span> entityPtr &lt;span style="font-weight:bold">=&lt;/span> g_EntityManager.getEntity(entityId);
+entityPtr&lt;span style="font-weight:bold">-&amp;gt;&lt;/span>doSomething();
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Of course this creates some overhead because you now have a layer of indirection: you have to search &lt;code>unordered_map&lt;/code> inside the &lt;code>EntityManager&lt;/code> to get the raw reference to the entity, but if you don&amp;rsquo;t do it too often (and you most likely won&amp;rsquo;t), you&amp;rsquo;ll be fine!&lt;/p>
+&lt;p>There&amp;rsquo;s another improvement which can be done: you can wrap your id inside the struct and then overload &lt;code>operator-&amp;gt;&lt;/code> for handle to act like a raw pointer:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp">&lt;span style="font-weight:bold">struct&lt;/span> &lt;span style="color:#458;font-weight:bold">EntityHandle&lt;/span> {
+EntityId id;
+EntityManager&lt;span style="font-weight:bold">*&lt;/span> entityManager;
+EntityHandle(EntityId id, EntityManager&lt;span style="font-weight:bold">*&lt;/span> entityManager) &lt;span style="font-weight:bold">:&lt;/span>
+id(id), entityManager(entityManager)
+{}
+Entity&lt;span style="font-weight:bold">*&lt;/span> &lt;span style="font-weight:bold">operator&lt;/span>&lt;span style="font-weight:bold">-&amp;gt;&lt;/span>() &lt;span style="font-weight:bold">const&lt;/span> {
+&lt;span style="font-weight:bold">return&lt;/span> &lt;span style="color:#900;font-weight:bold">get&lt;/span>();
+}
+Entity&lt;span style="font-weight:bold">*&lt;/span> &lt;span style="color:#900;font-weight:bold">get&lt;/span>() &lt;span style="font-weight:bold">const&lt;/span> {
+assert(entityManager&lt;span style="font-weight:bold">-&amp;gt;&lt;/span>entityExists(id));
+&lt;span style="font-weight:bold">return&lt;/span> entityManager&lt;span style="font-weight:bold">-&amp;gt;&lt;/span>getEntity(id);
+}
+};
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now you can do things like this:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp">EntityHandle &lt;span style="color:#900;font-weight:bold">handle&lt;/span>(someEntityId, &lt;span style="font-weight:bold">&amp;amp;&lt;/span>g_EntityManager);
+handle&lt;span style="font-weight:bold">-&amp;gt;&lt;/span>doSomething();
+&lt;span style="color:#998;font-style:italic">// or...
+&lt;/span>&lt;span style="color:#998;font-style:italic">&lt;/span>
+&lt;span style="font-weight:bold">auto&lt;/span> entityPtr &lt;span style="font-weight:bold">=&lt;/span> handle.get();
+entityPtr&lt;span style="font-weight:bold">-&amp;gt;&lt;/span>doSomething();
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Notice that we also get some error checking with assert which checks validity of the reference.
+Great! Now let&amp;rsquo;s see how we can reference entities in Lua scripts.&lt;/p>
+&lt;h2 id="storing-references-to-entities-in-lua">Storing references to entities in Lua&lt;/h2>
+&lt;blockquote class="hint-info">
+Full implementation can be found here: &lt;a href="https://gist.github.com/eliasdaler/f5c2ee50fc7e42bf3ee18ad7d46d18f8">C++ part&lt;/a>, &lt;a href="https://gist.github.com/eliasdaler/f3516d3deabc32b465a7c244ff082cf0">Lua part&lt;/a>.
+&lt;/blockquote>
+&lt;p>First of all, it&amp;rsquo;s obvious that you can use the same approach in Lua. Your handle can just be a number or a table with &lt;code>__index&lt;/code> meta-method so that you can use your handle as if it was the raw reference. But there&amp;rsquo;s a neater method I recently came up with. Let&amp;rsquo;s see how it works.&lt;/p>
+&lt;p>First of all, our handles will be tables with raw C++ references stored in them as userdata. They&amp;rsquo;ll also have a bool named &lt;code>isValid&lt;/code> which will help us test if the handle is still valid. We&amp;rsquo;ll also have a global table of references in Lua, so that you can easily get handle from any place without calling C++. What&amp;rsquo;s neat is that you&amp;rsquo;ll get &lt;strong>references&lt;/strong> to your handles, not a copy. It&amp;rsquo;s great, because you can easily compare two handles or even use them as table keys. You also don&amp;rsquo;t waste your memory, but that&amp;rsquo;s not a big concern as our handles are very light.&lt;/p>
+&lt;p>If you want to remove and recreate some entity, you&amp;rsquo;ll just have to notify the main Lua handle which will be stored inside some global Lua table. And because all your handles in Lua will be references to original handle you won&amp;rsquo;t have to care about them: once you update the main handle, it&amp;rsquo;s updated everywhere.&lt;/p>
+&lt;p>Another good thing is that once the entity is removed, we can just set &lt;code>isValid&lt;/code> to &lt;code>false&lt;/code> and raw reference to &lt;code>nil&lt;/code> just to be extra safe.&lt;/p>
+&lt;p>Let&amp;rsquo;s get to implementation! We&amp;rsquo;ll use &lt;!-- raw HTML omitted -->&lt;!-- raw HTML omitted -->&lt;a href="https://github.com/ThePhD/sol2">sol2&lt;/a> as our Lua/C++ binding library. Let&amp;rsquo;s write a simple &lt;code>Entity&lt;/code> and &lt;code>EntityManager&lt;/code> classes for testing:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp">&lt;span style="font-weight:bold">using&lt;/span> EntityId &lt;span style="font-weight:bold">=&lt;/span> &lt;span style="color:#458;font-weight:bold">int&lt;/span>;
+&lt;span style="font-weight:bold">class&lt;/span> &lt;span style="color:#458;font-weight:bold">Entity&lt;/span> {
+&lt;span style="font-weight:bold">public&lt;/span>&lt;span style="font-weight:bold">:&lt;/span>
+&lt;span style="font-weight:bold">explicit&lt;/span> Entity(EntityId id) &lt;span style="font-weight:bold">:&lt;/span>
+name(&lt;span style="color:#b84">&amp;#34;John&amp;#34;&lt;/span>), id(id)
+{}
+&lt;span style="font-weight:bold">const&lt;/span> std&lt;span style="font-weight:bold">::&lt;/span>string&lt;span style="font-weight:bold">&amp;amp;&lt;/span> getName() &lt;span style="font-weight:bold">const&lt;/span> { &lt;span style="font-weight:bold">return&lt;/span> name; }
+&lt;span style="color:#458;font-weight:bold">void&lt;/span> &lt;span style="color:#900;font-weight:bold">setName&lt;/span>(&lt;span style="font-weight:bold">const&lt;/span> std&lt;span style="font-weight:bold">::&lt;/span>string&lt;span style="font-weight:bold">&amp;amp;&lt;/span> n) { name &lt;span style="font-weight:bold">=&lt;/span> n; }
+EntityId &lt;span style="color:#900;font-weight:bold">getId&lt;/span>() &lt;span style="font-weight:bold">const&lt;/span> { &lt;span style="font-weight:bold">return&lt;/span> id; }
+&lt;span style="font-weight:bold">private&lt;/span>&lt;span style="font-weight:bold">:&lt;/span>
+std&lt;span style="font-weight:bold">::&lt;/span>string name;
+EntityId id;
+};
+sol&lt;span style="font-weight:bold">::&lt;/span>state lua; &lt;span style="color:#998;font-style:italic">// globals are bad, but we&amp;#39;ll use it for simpler implementation
+&lt;/span>&lt;span style="color:#998;font-style:italic">&lt;/span>
+&lt;span style="font-weight:bold">class&lt;/span> &lt;span style="color:#458;font-weight:bold">EntityManager&lt;/span> {
+&lt;span style="font-weight:bold">public&lt;/span>&lt;span style="font-weight:bold">:&lt;/span>
+EntityManager() &lt;span style="font-weight:bold">:&lt;/span> idCounter(&lt;span style="color:#099">0&lt;/span>) {}
+Entity&lt;span style="font-weight:bold">&amp;amp;&lt;/span> createEntity()
+{
+&lt;span style="font-weight:bold">auto&lt;/span> id &lt;span style="font-weight:bold">=&lt;/span> idCounter;
+&lt;span style="font-weight:bold">++&lt;/span>idCounter;
+&lt;span style="font-weight:bold">auto&lt;/span> inserted &lt;span style="font-weight:bold">=&lt;/span> entities.emplace(id, std&lt;span style="font-weight:bold">::&lt;/span>make_unique&lt;span style="font-weight:bold">&amp;lt;&lt;/span>Entity&lt;span style="font-weight:bold">&amp;gt;&lt;/span>(id));
+&lt;span style="font-weight:bold">auto&lt;/span> it &lt;span style="font-weight:bold">=&lt;/span> inserted.first; &lt;span style="color:#998;font-style:italic">// iterator to created id/Entity pair
+&lt;/span>&lt;span style="color:#998;font-style:italic">&lt;/span> &lt;span style="font-weight:bold">auto&lt;/span>&lt;span style="font-weight:bold">&amp;amp;&lt;/span> e &lt;span style="font-weight:bold">=&lt;/span> &lt;span style="font-weight:bold">*&lt;/span>it&lt;span style="font-weight:bold">-&amp;gt;&lt;/span>second; &lt;span style="color:#998;font-style:italic">// created entity
+&lt;/span>&lt;span style="color:#998;font-style:italic">&lt;/span> lua[&lt;span style="color:#b84">&amp;#34;createHandle&amp;#34;&lt;/span>](e);
+&lt;span style="font-weight:bold">return&lt;/span> e;
+}
+&lt;span style="color:#458;font-weight:bold">void&lt;/span> &lt;span style="color:#900;font-weight:bold">removeEntity&lt;/span>(EntityId id)
+{
+lua[&lt;span style="color:#b84">&amp;#34;onEntityRemoved&amp;#34;&lt;/span>](id);
+entities.erase(id);
+}
+&lt;span style="font-weight:bold">private&lt;/span>&lt;span style="font-weight:bold">:&lt;/span>
+std&lt;span style="font-weight:bold">::&lt;/span>unordered_map&lt;span style="font-weight:bold">&amp;lt;&lt;/span>EntityId, std&lt;span style="font-weight:bold">::&lt;/span>unique_ptr&lt;span style="font-weight:bold">&amp;lt;&lt;/span>Entity&lt;span style="font-weight:bold">&amp;gt;&amp;gt;&lt;/span> entities;
+EntityId idCounter;
+};
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Here&amp;rsquo;s how we will create our handle in Lua:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-lua" data-lang="lua">&lt;span style="font-weight:bold">function&lt;/span> &lt;span style="color:#900;font-weight:bold">createHandle&lt;/span>(cppRef)
+&lt;span style="font-weight:bold">local&lt;/span> handle &lt;span style="font-weight:bold">=&lt;/span> {
+cppRef &lt;span style="font-weight:bold">=&lt;/span> cppRef,
+isValid &lt;span style="font-weight:bold">=&lt;/span> &lt;span style="font-weight:bold">true&lt;/span>
+}
+setmetatable(handle, mt)
+Handles[cppRef:getId()] &lt;span style="font-weight:bold">=&lt;/span> handle
+&lt;span style="font-weight:bold">return&lt;/span> handle
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>The &lt;code>Handles&lt;/code> global table stores all handles so that we can easily get them later. As you can see, we still use integer ids for it as a tables key so that when we remove an entity, we can easily find its handle and modify it appropriately.&lt;/p>
+&lt;p>The metatable has an important function: it will let us use the handle as if it was the original reference. Here&amp;rsquo;s how it&amp;rsquo;s written:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-lua" data-lang="lua">&lt;span style="font-weight:bold">local&lt;/span> mt &lt;span style="font-weight:bold">=&lt;/span> { }
+mt.__index &lt;span style="font-weight:bold">=&lt;/span> &lt;span style="font-weight:bold">function&lt;/span>(handle, key)
+&lt;span style="font-weight:bold">if&lt;/span> &lt;span style="font-weight:bold">not&lt;/span> handle.isValid &lt;span style="font-weight:bold">then&lt;/span>
+print(debug.traceback())
+error(&lt;span style="color:#b84">&amp;#34;Error: handle is not valid!&amp;#34;&lt;/span>, &lt;span style="color:#099">2&lt;/span>)
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;span style="font-weight:bold">return&lt;/span> &lt;span style="font-weight:bold">function&lt;/span>(handle, ...) &lt;span style="font-weight:bold">return&lt;/span> Entity[key](handle.cppRef, ...) &lt;span style="font-weight:bold">end&lt;/span>
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Just a quick reminder: metatable&amp;rsquo;s &lt;code>__index&lt;/code> function gets called when the key in the table is not found and the table (our handle) and missing key are passed.&lt;/p>
+&lt;p>Here&amp;rsquo;s an example of how it all works. When we do this:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-lua" data-lang="lua">handle:setName(&lt;span style="color:#b84">&amp;#34;John&amp;#34;&lt;/span>)
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Lua checks if handle table has &amp;ldquo;setName&amp;rdquo; key, but it doesn&amp;rsquo;t, so it calls metatable&amp;rsquo;s &lt;code>__index&lt;/code> function with handle and &amp;ldquo;John&amp;rdquo; as parameters. The wrapper around &lt;code>Entity&lt;/code>&amp;rsquo;s member function is returned and it gets called. The function which gets returned is a closure which calls the &lt;code>Entity&lt;/code>&amp;rsquo;s class member function on original raw reference. Why can&amp;rsquo;t we just return &lt;code>Entity[key]&lt;/code>? The problem with that is that our handle will get passed into it while the function expects raw reference to be passed (&lt;code>cppRef:setName(&amp;quot;John&amp;quot;)&lt;/code> is the same as calling &lt;code>Entity.setName(cppRef, &amp;quot;John&amp;quot;)&lt;/code>).&lt;/p>
+&lt;p>The error checking that we have here is extremely important and useful! It allows us to easily debug problems with our code: we even print the call stack to find the place where our code crashed!&lt;/p>
+&lt;blockquote class="hint-info">
+Notice that we pass &amp;ldquo;2&amp;rdquo; as the second argument in &lt;code>error&lt;/code> function. It tells it that the problem is not the function which called it, the bad one was below it in a call stack.
+&lt;/blockquote>
+&lt;p>Another great thing about this implementation is that it lets us handle error on Lua side, not C++ side. Once the C++ function is called from Lua, it&amp;rsquo;s hard to properly throw and catch an error from C++. You&amp;rsquo;ll have to compile Lua as C++ to do it without a crash. Throwing the error before calling C++ allows us to safely catch it on Lua side and handle it appropriately. We&amp;rsquo;ll see how it can be done a bit later.&lt;/p>
+&lt;p>Let&amp;rsquo;s test out reference first:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-lua" data-lang="lua">&lt;span style="font-weight:bold">function&lt;/span> &lt;span style="color:#900;font-weight:bold">test&lt;/span>(cppRef)
+&lt;span style="font-weight:bold">local&lt;/span> handle &lt;span style="font-weight:bold">=&lt;/span> createHandle(cppRef)
+testHandle(handle)
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;span style="font-weight:bold">function&lt;/span> &lt;span style="color:#900;font-weight:bold">testHandle&lt;/span>(handle)
+print(&lt;span style="color:#b84">&amp;#34;Hello, my name is &amp;#34;&lt;/span> &lt;span style="font-weight:bold">..&lt;/span> handle:getName())
+handle:setName(&lt;span style="color:#b84">&amp;#34;Mark&amp;#34;&lt;/span>)
+print(&lt;span style="color:#b84">&amp;#34;My name is &amp;#34;&lt;/span> &lt;span style="font-weight:bold">..&lt;/span> handle:getName() &lt;span style="font-weight:bold">..&lt;/span> &lt;span style="color:#b84">&amp;#34; now!&amp;#34;&lt;/span>)
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Output:&lt;/p>
+&lt;!-- raw HTML omitted -->
+&lt;!-- raw HTML omitted -->
+&lt;p>It works! What should we do when entity gets removed? Let&amp;rsquo;s create a function for that:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-lua" data-lang="lua">&lt;span style="font-weight:bold">function&lt;/span> &lt;span style="color:#900;font-weight:bold">onEntityRemoved&lt;/span>(id)
+&lt;span style="font-weight:bold">local&lt;/span> handle &lt;span style="font-weight:bold">=&lt;/span> Handles[id];
+handle.cppRef &lt;span style="font-weight:bold">=&lt;/span> &lt;span style="font-weight:bold">nil&lt;/span>
+handle.isValid &lt;span style="font-weight:bold">=&lt;/span> &lt;span style="font-weight:bold">false&lt;/span>
+Handles[id] &lt;span style="font-weight:bold">=&lt;/span> &lt;span style="font-weight:bold">nil&lt;/span>
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>We need to call it before our entity gets removed and you can place it into &lt;code>Entity&lt;/code>&amp;rsquo;s destructor or into &lt;code>EntityManager&lt;/code>&amp;rsquo;s &lt;code>removeEntity&lt;/code> function. Note, that this doesn&amp;rsquo;t remove the handle itself: someone may still be referencing it, but setting corresponding value in &lt;code>Handles&lt;/code> table to &lt;code>nil&lt;/code> is still useful because if someone tries to grab a handle later, &lt;code>nil&lt;/code> will be returned. What&amp;rsquo;s more important is that &lt;code>isValid&lt;/code> is set to false so that the next time someone tries to use the handle, the error will be raised.&lt;/p>
+&lt;p>Now let&amp;rsquo;s see what happens when we try to use invalid reference. We can even do our error handling in Lua now!&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-lua" data-lang="lua">&lt;span style="font-weight:bold">function&lt;/span> &lt;span style="color:#900;font-weight:bold">testBadReference&lt;/span>()
+&lt;span style="font-weight:bold">local&lt;/span> handle &lt;span style="font-weight:bold">=&lt;/span> Handles[&lt;span style="color:#099">0&lt;/span>] &lt;span style="color:#998;font-style:italic">-- this handle exists and is okay&lt;/span>
+handle.isValid &lt;span style="font-weight:bold">=&lt;/span> &lt;span style="font-weight:bold">false&lt;/span> &lt;span style="color:#998;font-style:italic">-- but suppose that entity was removed!&lt;/span>
+&lt;span style="font-weight:bold">local&lt;/span> _, err &lt;span style="font-weight:bold">=&lt;/span> pcall(testHandle, handle)
+&lt;span style="font-weight:bold">if&lt;/span> err &lt;span style="font-weight:bold">then&lt;/span>
+print(err)
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>When we call this function from C++ we don&amp;rsquo;t get a crash which would have been caused by using stale reference. Instead, we get a helpful error message and call stack:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sh" data-lang="sh">stack traceback:
+script.lua:23: in &lt;span style="font-weight:bold">function&lt;/span> &lt;span style="color:#b84">&amp;#39;getName&amp;#39;&lt;/span>
+script.lua:57: in &lt;span style="font-weight:bold">function&lt;/span> &amp;lt;script.lua:56&amp;gt;
+&lt;span style="font-weight:bold">[&lt;/span>C&lt;span style="font-weight:bold">]&lt;/span>: in &lt;span style="font-weight:bold">function&lt;/span> &lt;span style="color:#b84">&amp;#39;pcall&amp;#39;&lt;/span>
+script.lua:65: in &lt;span style="font-weight:bold">function&lt;/span> &amp;lt;script.lua:62&amp;gt;
+script.lua:57: Error: handle is not valid!
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>What about the performance? My tests show that it&amp;rsquo;s around &lt;strong>600 nanoseconds&lt;/strong> per C++ member function call. It&amp;rsquo;s not that bad, but still may be not good enough for some people. In that case it&amp;rsquo;s easy to get a raw reference and then use it without any additional overhead of error checking:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-lua" data-lang="lua">&lt;span style="font-weight:bold">local&lt;/span> rawRef &lt;span style="font-weight:bold">=&lt;/span> handle.cppRef
+print(&lt;span style="color:#b84">&amp;#34;Raw reference used. Name: &amp;#34;&lt;/span> &lt;span style="font-weight:bold">..&lt;/span> rawRef:getName())
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>We can also speed up &lt;code>__index&lt;/code> function. I&amp;rsquo;ve found that its biggest overhead is creating a closure every time&amp;hellip; so let&amp;rsquo;s memoize our wrapper functions! First of all, we&amp;rsquo;ll create a table which will store our wrapper functions:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-lua" data-lang="lua">&lt;span style="font-weight:bold">local&lt;/span> memoizedFuncs &lt;span style="font-weight:bold">=&lt;/span> {}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>And then we change our &lt;code>__index&lt;/code> method to this:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-lua" data-lang="lua">mt.__index &lt;span style="font-weight:bold">=&lt;/span> &lt;span style="font-weight:bold">function&lt;/span>(handle, key)
+&lt;span style="font-weight:bold">if&lt;/span> &lt;span style="font-weight:bold">not&lt;/span> handle.isValid &lt;span style="font-weight:bold">then&lt;/span>
+print(debug.traceback())
+error(&lt;span style="color:#b84">&amp;#34;Error: handle is not valid!&amp;#34;&lt;/span>, &lt;span style="color:#099">2&lt;/span>)
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;span style="font-weight:bold">local&lt;/span> f &lt;span style="font-weight:bold">=&lt;/span> memoizedFuncs[key]
+&lt;span style="font-weight:bold">if&lt;/span> &lt;span style="font-weight:bold">not&lt;/span> f &lt;span style="font-weight:bold">then&lt;/span>
+f &lt;span style="font-weight:bold">=&lt;/span> &lt;span style="font-weight:bold">function&lt;/span>(handle, ...) &lt;span style="font-weight:bold">return&lt;/span> Entity[key](handle.cppRef, ...) &lt;span style="font-weight:bold">end&lt;/span>
+memoizedFuncs[key] &lt;span style="font-weight:bold">=&lt;/span> f
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;span style="font-weight:bold">return&lt;/span> f
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>The closure for each function will be created once and then will get reused. This speeds up things considerably! The overhead is roughly &lt;strong>200 nanoseconds&lt;/strong> per call.&lt;/p>
+&lt;p>What else? Calling the function through &lt;code>__index&lt;/code> produces additional overhead too. Suppose that we use &lt;code>getName&lt;/code> function very often and want it to be part of our handle table so that it&amp;rsquo;s called directly. Ok, let&amp;rsquo;s do this!&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-lua" data-lang="lua">&lt;span style="font-weight:bold">function&lt;/span> &lt;span style="color:#900;font-weight:bold">createHandle&lt;/span>(cppRef)
+&lt;span style="font-weight:bold">local&lt;/span> handle &lt;span style="font-weight:bold">=&lt;/span> {
+cppRef &lt;span style="font-weight:bold">=&lt;/span> cppRef,
+isValid &lt;span style="font-weight:bold">=&lt;/span> &lt;span style="font-weight:bold">true&lt;/span>
+}
+handle.getName &lt;span style="font-weight:bold">=&lt;/span> &lt;span style="font-weight:bold">function&lt;/span>(handle, ...)
+&lt;span style="font-weight:bold">return&lt;/span> Entity.getName(handle.cppRef, ...)
+&lt;span style="font-weight:bold">end&lt;/span>
+setmetatable(handle, mt)
+Handles[cppRef:getId()] &lt;span style="font-weight:bold">=&lt;/span> handle
+&lt;span style="font-weight:bold">return&lt;/span> handle
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Wait a second&amp;hellip; what happens when we call getName on bad handle? There&amp;rsquo;s no error checking! Let&amp;rsquo;s fix that:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-lua" data-lang="lua">&lt;span style="font-weight:bold">function&lt;/span> &lt;span style="color:#900;font-weight:bold">getWrappedSafeFunction&lt;/span>(f)
+&lt;span style="font-weight:bold">return&lt;/span> &lt;span style="font-weight:bold">function&lt;/span>(handle, ...)
+&lt;span style="font-weight:bold">if&lt;/span> &lt;span style="font-weight:bold">not&lt;/span> handle.isValid &lt;span style="font-weight:bold">then&lt;/span>
+print(debug.traceback())
+error(&lt;span style="color:#b84">&amp;#34;Error: handle is not valid!&amp;#34;&lt;/span>, &lt;span style="color:#099">2&lt;/span>)
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;span style="font-weight:bold">return&lt;/span> f(handle.cppRef, ...)
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>and then in createHandle we&amp;rsquo;ll write:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-lua" data-lang="lua">handle.getName &lt;span style="font-weight:bold">=&lt;/span> getWrappedSafeFunction(Entity.getName)
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now the overhead is just &lt;strong>70 nanoseconds&lt;/strong>. The only added overhead is additional function call, validity check and retrieval of raw reference from handle table, but I think it&amp;rsquo;s pretty small for gained benefits.&lt;/p></description></item><item><title>Re:creation dev log. July - November 2016</title><link>https://eliasdaler.github.io/hugo-test/posts/re-creation-devlog-july-november2016/</link><pubDate>Sun, 27 Nov 2016 15:00:00 +0300</pubDate><guid>https://eliasdaler.github.io/hugo-test/posts/re-creation-devlog-july-november2016/</guid><description>&lt;p>The last five months were really important for the game. It finally feels like I can work on the game itself now, not just the engine and basic systems which will let me implement different stuff in the game. It&amp;rsquo;s not just abstract stuff, stuff which I do &amp;ldquo;just in case&amp;rdquo;. No, I try to be pragmatic and implement things which are needed for the game and which will let me create stuff without much restrictions.&lt;/p>
 &lt;p>I&amp;rsquo;m very glad to say this, but I feel like the core engine is almost done. There are still some important things which I&amp;rsquo;ll have to implement, but it still feels like I&amp;rsquo;m finally happy with the design I have. Mostly, it&amp;rsquo;s because I&amp;rsquo;ve removed lots of stuff and find lots of ways to minimize my code which in the end gives me ability to implement new stuff easier and makes the whole thing easier to expand, modify and debug.&lt;/p>
 &lt;p>I&amp;rsquo;m finally ready to do a lot of prototyping. I&amp;rsquo;ve already done a lot of stuff about the game, but I still have the feeling that it&amp;rsquo;s just the beginning of the &amp;ldquo;real&amp;rdquo; development! And it feels great, because I feel like I&amp;rsquo;m in total control of every aspect of the game. There are no restrictions, no boundaries. Let&amp;rsquo;s see how it goes.&lt;/p>
 &lt;p>One more small thing: I&amp;rsquo;ve got a new laptop! I&amp;rsquo;ve had it for two weeks now. It feels really great. I&amp;rsquo;m able to do stuff a lot quicker and without frustration (having a great mood is important to be productive)! I&amp;rsquo;ve had my previous laptop for six years and it was slowing me down a lot. It was constantly overheating, everything was running poorly, compilation took a long time, etc&amp;hellip; And recently I&amp;rsquo;ve realized how much it hurt my working process. There were lots of distractions, because even small change could take 1-2 minutes of recompilation. This means, that fast iteration was impossible. This also means that I constantly lost flow and couldn&amp;rsquo;t debug quickly. Hours of slow progress made it all exhausting. Won&amp;rsquo;t happen anymore!&lt;/p>
