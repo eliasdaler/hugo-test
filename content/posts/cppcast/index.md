@@ -1,7 +1,7 @@
 ---
 title: "CppCast"
 date: 2016-07-09T01:05:00+03:00
-draft: true
+draft: false
 ---
 
 ![Me on CppCast](cppcast.jpg)
