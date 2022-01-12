@@ -1,5 +1,5 @@
 ---
-title: "Using Dear ImGui with modern C++ and STL for creating awesome game dev tools. Part 2. Some tips and tricks."
+title: "Using Dear ImGui with modern C++ and STL for creating awesome game dev tools"
 date: 2016-07-21T20:34:00+0300
 lastmod: 2021-01-12T23:40:00+30:00
 draft: false

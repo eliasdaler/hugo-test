@@ -28,7 +28,7 @@ for my games.
 
 {{< figure src="tomb-painter-dev-tools.png" title="Tomb Painter dev tools" >}}
 
-{{< figure src="recration-level-editor.gif" title="Level editor in Re:creation" >}}
+{{< figure src="recreation-level-editor.gif" title="Level editor in Re:creation" >}}
 
 
 {{< figure src="recreation-lua-console.gif" title="Lua console" >}}
@@ -197,8 +197,8 @@ There are two phases of using ImGui in your game loop: **update** and **render**
 
 **Drawing** is done with `ImGui::SFML::Render` call.
 
-{{< hint info >}}
-Don't call `ImGui::Render`, it may lead to some bugs which `ImGui::SFML::Render` doesn't have.
+{{< hint danger >}}
+Don't call `ImGui::Render`, only call `ImGui::SFML::Render`
 {{< /hint >}}
 
 {{< hint info >}}
