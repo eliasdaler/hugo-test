@@ -1,5 +1,5 @@
 ---
-title: "Using ImGui with SFML for creating awesome game dev tools. Part 1."
+title: "Using Dear ImGui with SFML for creating awesome game dev tools"
 date: 2016-07-10T15:42:00+03:00
 draft: false
 tags: [Tutorial, SFML, ImGui, C++]
@@ -11,15 +11,8 @@ ___
 
 This is the first part of tutorial about Dear ImGui (AKA ImGui) and it'll show you how to set it up with SFML. The second part will be library agnostic and will talk about common ways of doing stuff in ImGui, some awesome widgets and some useful STL overloads.
 
-{{< figure src="https://eliasdaler.files.wordpress.com/2016/05/examples_01.png?w=662" title="Different Dear ImGui widgets" >}}
+{{< figure src="imgui-widgets.png" title="Different Dear ImGui widgets" >}}
 
-
-
-*Different ImGui widgets (taken from ImGui's github page)*
-
-___
-
-<!--more--><p><a class="anchor" id="read-more"></a></p>
 
 
 {{< toc >}}
@@ -33,14 +26,14 @@ tools for your game is very important and can lead to productivity and
 creativity boost. Here are some examples of tools I managed to make with ImGui
 for my games.
 
-{{< figure src="https://i.imgur.com/vCXP1uu.png" title="Tomb Painter dev tools" >}}
+{{< figure src="tomb-painter-dev-tools.png" title="Tomb Painter dev tools" >}}
 
-{{< figure src="https://i.imgur.com/iQibpSk.gif" title="Level editor in Tomb Painter" >}}
+{{< figure src="recration-level-editor.gif" title="Level editor in Re:creation" >}}
 
 
-{{< figure src="http://i.imgur.com/8yt6Y7E.gif" title="Lua console" >}}
+{{< figure src="recreation-lua-console.gif" title="Lua console" >}}
 
-{{< figure src="https://i.imgur.com/A44zLlb.gif" title="Animation editor" >}}
+{{< figure src="recreation-animation-editor.gif" title="Animation editor" >}}
 
 As you can see there's a wide range of widgets that ImGui provides and there are lots of other great examples of how other people use it here.
 
@@ -186,12 +179,12 @@ int main() {
 
 You'll see something like this:
 
-![First example](http://i.imgur.com/1H6Jt6m.png)
+![First example](rgb1.png)
 
 Try to change some stuff. Double click on r/g/b field to set values precisely, or just drag some widgets to change window's background color. Press the button to change window title.
 Here, it works!
 
-![First example](http://i.imgur.com/06s334T.png)
+![First example](rgb2.png)
 Awesome! Now let's see how it works.
 
 ImGui is initialized by calling `ImGui::SFML::Init` function to which you pass your `sf::RenderWindow`. This creates internal default font atlas. See how you can use other fonts in [Fonts how-to section](https://github.com/eliasdaler/imgui-sfml#fonts-how-to) of imgui-sfml's README.
