@@ -1,1 +1,449 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Re:creation on Elias Daler's blog</title><link>https://eliasdaler.github.io/hugo-test/tags/recreation/</link><description>Recent content in Re:creation on Elias Daler's blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Sun, 27 Nov 2016 15:00:00 +0300</lastBuildDate><atom:link href="https://eliasdaler.github.io/hugo-test/tags/recreation/index.xml" rel="self" type="application/rss+xml"/><item><title>Re:creation dev log. July - November 2016</title><link>https://eliasdaler.github.io/hugo-test/posts/re-creation-devlog-july-november2016/</link><pubDate>Sun, 27 Nov 2016 15:00:00 +0300</pubDate><guid>https://eliasdaler.github.io/hugo-test/posts/re-creation-devlog-july-november2016/</guid><description>The last five months were really important for the game. It finally feels like I can work on the game itself now, not just the engine and basic systems which will let me implement different stuff in the game. It&amp;rsquo;s not just abstract stuff, stuff which I do &amp;ldquo;just in case&amp;rdquo;. No, I try to be pragmatic and implement things which are needed for the game and which will let me create stuff without much restrictions.</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Re:creation on Elias Daler's blog</title><link>https://eliasdaler.github.io/hugo-test/tags/recreation/</link><description>Recent content in Re:creation on Elias Daler's blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Sun, 27 Nov 2016 15:00:00 +0300</lastBuildDate><atom:link href="https://eliasdaler.github.io/hugo-test/tags/recreation/index.xml" rel="self" type="application/rss+xml"/><item><title>My First Post</title><link>https://eliasdaler.github.io/hugo-test/posts/my-first-post/</link><pubDate>Wed, 12 Jan 2022 14:22:34 +0300</pubDate><guid>https://eliasdaler.github.io/hugo-test/posts/my-first-post/</guid><description>&lt;p>Hello world.&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="font-weight:bold">func&lt;/span> &lt;span style="color:#900;font-weight:bold">x&lt;/span>() {
+&lt;span style="font-weight:bold">if&lt;/span> x &lt;span style="font-weight:bold">==&lt;/span> &lt;span style="color:#099">5&lt;/span> {
+&lt;span style="font-weight:bold">return&lt;/span> &lt;span style="font-weight:bold">nil&lt;/span>
+}
+}
+&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>Re:creation dev log. July - November 2016</title><link>https://eliasdaler.github.io/hugo-test/posts/re-creation-devlog-july-november2016/</link><pubDate>Sun, 27 Nov 2016 15:00:00 +0300</pubDate><guid>https://eliasdaler.github.io/hugo-test/posts/re-creation-devlog-july-november2016/</guid><description>&lt;p>The last five months were really important for the game. It finally feels like I can work on the game itself now, not just the engine and basic systems which will let me implement different stuff in the game. It&amp;rsquo;s not just abstract stuff, stuff which I do &amp;ldquo;just in case&amp;rdquo;. No, I try to be pragmatic and implement things which are needed for the game and which will let me create stuff without much restrictions.&lt;/p>
+&lt;p>I&amp;rsquo;m very glad to say this, but I feel like the core engine is almost done. There are still some important things which I&amp;rsquo;ll have to implement, but it still feels like I&amp;rsquo;m finally happy with the design I have. Mostly, it&amp;rsquo;s because I&amp;rsquo;ve removed lots of stuff and find lots of ways to minimize my code which in the end gives me ability to implement new stuff easier and makes the whole thing easier to expand, modify and debug.&lt;/p>
+&lt;p>I&amp;rsquo;m finally ready to do a lot of prototyping. I&amp;rsquo;ve already done a lot of stuff about the game, but I still have the feeling that it&amp;rsquo;s just the beginning of the &amp;ldquo;real&amp;rdquo; development! And it feels great, because I feel like I&amp;rsquo;m in total control of every aspect of the game. There are no restrictions, no boundaries. Let&amp;rsquo;s see how it goes.&lt;/p>
+&lt;p>One more small thing: I&amp;rsquo;ve got a new laptop! I&amp;rsquo;ve had it for two weeks now. It feels really great. I&amp;rsquo;m able to do stuff a lot quicker and without frustration (having a great mood is important to be productive)! I&amp;rsquo;ve had my previous laptop for six years and it was slowing me down a lot. It was constantly overheating, everything was running poorly, compilation took a long time, etc&amp;hellip; And recently I&amp;rsquo;ve realized how much it hurt my working process. There were lots of distractions, because even small change could take 1-2 minutes of recompilation. This means, that fast iteration was impossible. This also means that I constantly lost flow and couldn&amp;rsquo;t debug quickly. Hours of slow progress made it all exhausting. Won&amp;rsquo;t happen anymore!&lt;/p>
+&lt;p>Okay, let&amp;rsquo;s begin!&lt;/p>
+&lt;h1 id="art">Art&lt;/h1>
+&lt;p>I haven&amp;rsquo;t done much art in the last months and most of the stuff I&amp;rsquo;ve done is still not finished, so I&amp;rsquo;ll show them a bit later. There&amp;rsquo;s a next graphics improvement coming and I&amp;rsquo;m glad that I didn&amp;rsquo;t have a lot of graphics done, because I&amp;rsquo;d have to redraw tons of stuff. Let&amp;rsquo;s hope it will be the last huge change!&lt;/p>
+&lt;p>I&amp;rsquo;ve improved Renatus' design and walking animation, it&amp;rsquo;s nice to see how much my art improved over time:
+&lt;img src="walk-animations.gif" alt="Re:cration walk cycles">&lt;/p>
+&lt;p>I&amp;rsquo;ve also made some very small, but cool things&amp;hellip;
+Unsynched idle animations make everything look more alive!
+&lt;img src="torches.gif" alt="Torches">&lt;/p>
+&lt;p>Cat doesn&amp;rsquo;t &amp;ldquo;talk&amp;rdquo; during &amp;ldquo;translation&amp;rdquo;
+&lt;img src="cat-talk.gif" alt="Cat speaking">&lt;/p>
+&lt;h1 id="multiple-tilemaps-in-one-level">Multiple tilemaps in one level&lt;/h1>
+&lt;p>Previously the level was limited to one tile map. That meant that if I wanted to make indoor places I either had to switch to another level (which isn&amp;rsquo;t fast!) or place the indoor area somewhere far away and teleport the player there. The second approach is highly used in 3d games, but I&amp;rsquo;ve realized that it wasn&amp;rsquo;t as good in 2d tile-based games because it&amp;rsquo;s harder to move tiles and you have to account for empty areas in your tilemap which are created by placing some area far away.&lt;/p>
+&lt;p>Eventually, I&amp;rsquo;ve made a decision to make levels which support multiple tilemaps. It wasn&amp;rsquo;t easy to make, because lots of assumptions were made about Level having only one tilemap, but fortunately it wasn&amp;rsquo;t that bad, so I&amp;rsquo;ve done it fairly quickly. Now I can easily switch tilemaps during the fade in / fade out effect during scene transitions.&lt;/p>
+&lt;h1 id="input">Input&lt;/h1>
+&lt;p>Previously I&amp;rsquo;ve used polling for input, but realized that events are a lot more efficient and let me easily move all the input in Lua! One more part of game logic moved from C++ to Lua again! Great.&lt;/p>
+&lt;p>I&amp;rsquo;ve also made much better system for input in general. Now all keys can be mapped to &amp;ldquo;actions&amp;rdquo; or &amp;ldquo;axes&amp;rdquo; (plural of &amp;ldquo;axis&amp;rdquo;, not &amp;ldquo;axe&amp;rdquo;!). &amp;ldquo;Actions&amp;rdquo; and &amp;ldquo;Axes&amp;rdquo; can be binded to C++ or Lua callback. This makes low-level input decoupled from game input logic in a nice way.&lt;/p>
+&lt;p>One advantage of event based scripting is being able to set only one callback for particular action at given time. For example, during dialogues the &amp;ldquo;Primary Action&amp;rdquo; input action will be assigned to &amp;ldquo;Skip dialogue&amp;rdquo;, not &amp;ldquo;Attack/Use Primary Item&amp;rdquo;, so I don&amp;rsquo;t have to worry that somehow the player will be able to attack during dialogues.&lt;/p>
+&lt;p>My input manager now also has complete gamepad support (sticks and triggers are also supported and it&amp;rsquo;s possible to connect gamepad in-game!). Event based input will later make it easy to implement replay system which will just send input events at needed times, simulating real player pressing buttons. Easy to implement and very useful for debugging!&lt;/p>
+&lt;h1 id="moved-entity-states-from-c-to-lua">Moved Entity states from C++ to Lua&lt;/h1>
+&lt;p>This is a thing that I wanted to make for a long time. Basically, most of the game logic lives in entity states. State like &lt;code>MoveState&lt;/code>, &lt;code>AttackState&lt;/code>, etc. Previously they were hard-coded in C++ which made them hard to modify and control with Lua. Another problem was that the more stuff I added to Lua, the harder it became for me to access stuff one Lua side.&lt;/p>
+&lt;p>For example, once I&amp;rsquo;ve implemented Action Lists in Lua, I&amp;rsquo;ve realized that some entity states can highly benefit from using them. But this meant that a lot of calls between Lua and C++ would happen.&lt;/p>
+&lt;p>Rewriting entity states was extremely easy and I&amp;rsquo;ve discovered and fixed a lot of bugs along the way. I&amp;rsquo;ve also made entity states a lot more reusable, so that different entities can use the same code while adding bits that are different. For example, the same AttackState is used by player character, enemies with melee weapons and archers!&lt;/p>
+&lt;p>Action lists are used to make code much easier to follow, basically the lists goes like this:&lt;/p>
+&lt;ul>
+&lt;li>Pre-attack animation (starting to swing a sword / aiming the arrow)&lt;/li>
+&lt;li>Attack animation (continuing to swing a sword / shooting the arrow)
+During this step the damage is created during some frame. For melee attackers it&amp;rsquo;s defined in their AttackComponent, for archer the damage is &amp;ldquo;arrow&amp;rdquo; entity which is created on the first frame of &amp;ldquo;shoot&amp;rdquo; animation&lt;/li>
+&lt;li>Post attack animation&lt;/li>
+&lt;/ul>
+&lt;p>I&amp;rsquo;ve also implemented multiple state machines for entities. Most of the time the entity will have only one state machine which will describe it&amp;rsquo;s &amp;ldquo;main&amp;rdquo; state, but sometimes it&amp;rsquo;s useful to have another state machine which will, for example, describe it&amp;rsquo;s health state, so that if the entity has low health, it will play different &amp;ldquo;idle&amp;rdquo; animation.&lt;/p>
+&lt;h1 id="private-messages-in-event-system">Private messages in event system&lt;/h1>
+&lt;p>I&amp;rsquo;ve effectively used event system with global queue for quite some time, but then I&amp;rsquo;ve realized that it&amp;rsquo;s not efficient for some events to be implemented that way. One example of this is collision callbacks. When two entities collide, each entity&amp;rsquo;s onCollide function needs to be called with some additional info about which entity collided with it and maybe how it happened. In global queue each entity interested in collision event would receive this event and it would have to check if the collision happened with it or not. Of course that&amp;rsquo;s a huge waste of time, so that&amp;rsquo;s why I&amp;rsquo;ve made &amp;ldquo;private message&amp;rdquo; system which let&amp;rsquo;s entities specify sender and receiver for each event and then EventManager just sends this event to receiver object.&lt;/p>
+&lt;h1 id="improved-dialogues-a-lot">Improved dialogues a lot&lt;/h1>
+&lt;p>Dialogue system got some needed improvements! One such improvement is ability to insert delays and even function calls between words! It looks like this in a text:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{&lt;span style="color:#000080">&amp;#34;SOME_TEXT_TAG&amp;#34;&lt;/span> : &lt;span style="color:#b84">&amp;#34;Hello...[DELAY 500][X] I&amp;#39;ve been waiting for you&amp;#34;&lt;/span>}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;code>[DELAY 500]&lt;/code> creates a 500 ms delay. &lt;code>[X]&lt;/code> indicates that the function with tag &amp;ldquo;X&amp;rdquo; will be called. In scripts, it looks something like this:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-lua" data-lang="lua">DialogueAction {
+text &lt;span style="font-weight:bold">=&lt;/span> {&lt;span style="color:#b84">&amp;#34;SOME_TEXT_TAG&amp;#34;&lt;/span>},
+functions &lt;span style="font-weight:bold">=&lt;/span> {
+x &lt;span style="font-weight:bold">=&lt;/span> &lt;span style="font-weight:bold">function&lt;/span>(talker)
+talker:setAnimation(&lt;span style="color:#b84">&amp;#34;smile&amp;#34;&lt;/span>)
+&lt;span style="font-weight:bold">end&lt;/span>
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>I later plan to add shaking or wave effects to text for better expression of characters' emotions.&lt;/p>
+&lt;h1 id="dev-tools">Dev tools&lt;/h1>
+&lt;p>I&amp;rsquo;ve made some useful in-game dev tools with ImGui. One such tool is in-game console which lets me execute Lua easily. Here&amp;rsquo;s a little demo of it in action!
+&lt;img src="lua-console.gif" alt="Lua console">&lt;/p>
+&lt;p>I&amp;rsquo;ve also made a tool for controlling time. Now it&amp;rsquo;s possible to slow down and pause the game at any moment. The game doesn&amp;rsquo;t slow down or stop, I just change deltaTime, so I can easily debug everything in Visual Studio.
+&lt;img src="time-control.gif" alt="Time control">&lt;/p>
+&lt;h1 id="removed-tons-of-components">Removed tons of components&lt;/h1>
+&lt;p>I&amp;rsquo;ve also removed a lot of components which I found redundant and easily made with other components which have much larger role. Here&amp;rsquo;s what I&amp;rsquo;ve removed.&lt;/p>
+&lt;h2 id="direction-component">Direction Component&lt;/h2>
+&lt;p>Direction component stored just one thing: entity&amp;rsquo;s direction. But that meant that to access entity&amp;rsquo;s direction I had to get DirectionComponent and then get the direction. Getting component from entity isn&amp;rsquo;t very fast (because it involves a &lt;code>dynamic_cast&lt;/code> and &lt;code>std::unordered_map&lt;/code> search) so I&amp;rsquo;ve just started to store entity&amp;rsquo;s direction in Entity class. Yes, some entities won&amp;rsquo;t have a direction (invisible entities or trees, for example), but I just assign &lt;code>Direction::None&lt;/code> to them. Storing 1 additional byte inside of Entity isn&amp;rsquo;t a big deal!&lt;/p>
+&lt;h2 id="trigger-component">Trigger Component&lt;/h2>
+&lt;p>I&amp;rsquo;ve also removed trigger component. Previously it was used for triggers and made possible to realize the following callbacks: &lt;code>onEnter&lt;/code>, &lt;code>onStay&lt;/code> and &lt;code>onExit&lt;/code>. But how did I check when to call them? I checked if trigger collides with potentially interesting entities or not&amp;hellip; but then I&amp;rsquo;ve realized: why not just use &lt;code>CollisionComponent&lt;/code> for that and make a simple entity state machine which will track entities state which are: Idle or Triggered. OnEnter is called on transition from Idle to Triggered state, onStay is called when Triggered state is active and onExit is called during transition from Triggered to Idle state. &lt;code>CollisionEnter&lt;/code> and &lt;code>CollisionExit&lt;/code> events trigger state transitions. This means that TriggerComponent wasn&amp;rsquo;t needed anymore and I got rid of it with a huge satisfaction.&lt;/p>
+&lt;p>I&amp;rsquo;ve also made &amp;ldquo;directed&amp;rdquo; triggers which are called only when the player faces the specific direction, for example cafe has a trigger which lets player exit it when his direction is &amp;ldquo;Down&amp;rdquo;.&lt;/p>
+&lt;h2 id="interaction-component">Interaction Component&lt;/h2>
+&lt;p>Interaction Component was used for player-entity interactions, for example speaking with NPCs. When the player enters the &amp;ldquo;interaction area&amp;rdquo;, the input changes and pressing a specific button will start dialogue. Hmmm&amp;hellip; seems familiar, isn&amp;rsquo;t it? Yes, this component isn&amp;rsquo;t needed too, because I can just make a trigger which will just change the input during onEnter/onExit function calls. Using it with &amp;ldquo;directed&amp;rdquo; triggers makes it perfect, because now it&amp;rsquo;s easy to make interaction possible only when the player faces the entity. (Previously it was possible to talk with NPCs while turning away from them, not cool!)&lt;/p>
+&lt;h1 id="remade-damage-system">Remade damage system&lt;/h1>
+&lt;p>Previously when player attacked, the &amp;ldquo;damage&amp;rdquo; entity was created and then destroyed. If something collided with it, the damage was registered. But on one random forum I&amp;rsquo;ve found much better solution: just have &amp;ldquo;damage&amp;rdquo; rect with melee attackers all the time and activate it only during attack. Simple and much more efficient!&lt;/p>
+&lt;h1 id="sat-separating-axis-theorem-collision">SAT (Separating Axis Theorem) collision&lt;/h1>
+&lt;p>After a lot of trying and failing, I&amp;rsquo;ve implemented SAT collision detection and response which will be used for some complex level geometry.
+&lt;img src="sat.gif" alt="SAT in action">&lt;/p>
+&lt;p>I&amp;rsquo;ve put my SAT implementation &lt;a href="https://gist.github.com/eliasdaler/502b54fcf1b515bcc50360ce874e81bc">here&lt;/a>. Feel free to use it for your projects!&lt;/p>
+&lt;h1 id="refactoring">Refactoring&lt;/h1>
+&lt;p>I&amp;rsquo;ve also done &lt;strong>a lot&lt;/strong> of refactoring. I&amp;rsquo;m mostly satisfied with most of my codebase, but there was some bad stuff that I needed to fix once and for all!
+Mostly, I&amp;rsquo;ve been fixing pretty typical problems: unnecessary dependencies, some code duplication, problems with ownerships, etc. Not too much to say about that!
+But the good thing about refactoring is that it just made my codebase a lot shorter. At some point it&amp;rsquo;s not a refactoring anymore, it&amp;rsquo;s restructuring, implementing better code, moving some stuff to Lua, etc.&lt;/p>
+&lt;p>&lt;strong>C++&lt;/strong>: -4345 lines of code&lt;/p>
+&lt;p>&lt;strong>Lua&lt;/strong>: +540 lines of code&lt;/p>
+&lt;p>&lt;strong>Total&lt;/strong>: -3814 lines of code&lt;/p>
+&lt;p>This makes me extremely happy, because shorter and cleaner code is much easier to manage and improve. Writing negative code feels great!&lt;/p>
+&lt;h1 id="conclusion">Conclusion&lt;/h1>
+&lt;p>The last few months were very important and productive! While there wasn&amp;rsquo;t a huge progress about the game itself, the engine is almost done, I&amp;rsquo;m very happy with the code and engine structure now. The next few months will be spent prototyping and making &amp;ldquo;vertical slice&amp;rdquo; of the game and I hope I&amp;rsquo;ll be able to make game truly fun and enjoyable. See ya!&lt;/p></description></item><item><title>Using Dear ImGui with modern C++ and STL for creating awesome game dev tools</title><link>https://eliasdaler.github.io/hugo-test/posts/using-imgui-with-sfml-pt-2/</link><pubDate>Thu, 21 Jul 2016 20:34:00 +0300</pubDate><guid>https://eliasdaler.github.io/hugo-test/posts/using-imgui-with-sfml-pt-2/</guid><description>&lt;p>Related article: &lt;a href="https://eliasdaler.github.io/hugo-test/posts/using-imgui-with-sfml-pt-1/">Using Dear ImGui with SFML for creating awesome game dev tools&lt;/a>&lt;/p>
+&lt;hr>
+&lt;p>This is my second article about Dear ImGui! This article is a collection of useful things, hacks and other stuff I&amp;rsquo;ve found while using ImGui. Mostly it&amp;rsquo;s focused on using modern C++ and some parts of STL with ImGui.&lt;/p>
+&lt;figure>&lt;img src="imgui-widgets.png"/>&lt;figcaption>
+&lt;h4>Different Dear ImGui widgets&lt;/h4>
+&lt;/figcaption>
+&lt;/figure>
+&lt;div>
+&lt;h2>Table Of Contents&lt;/h2>
+&lt;nav id="TableOfContents">
+&lt;ul>
+&lt;li>&lt;a href="#labels">Labels&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#getting-back-to-the-context-of-the-window-tree-etc">Getting back to the context of the window, tree, etc.&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#inputfloatn--struct">InputFloatN + struct&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#using-imgui-with-stl">Using ImGui with STL&lt;/a>
+&lt;ul>
+&lt;li>&lt;a href="#arrays">Arrays&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#combobox-listbox">ComboBox, ListBox&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#inputtext-and-stdstring">InputText and std::string&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;/nav>
+&lt;/div>
+&lt;h2 id="labels">Labels&lt;/h2>
+&lt;p>Labels are used in ImGui as unique IDs for widgets. You shouldn&amp;rsquo;t use same labels for two different widgets as it will introduce collisions between widgets and that will lead to some unwanted behavior.&lt;/p>
+&lt;p>Suppose you have two buttons with label &amp;ldquo;Meow&amp;rdquo; and you have a code like this:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp">&lt;span style="font-weight:bold">if&lt;/span> (ImGui&lt;span style="font-weight:bold">::&lt;/span>Button(&lt;span style="color:#b84">&amp;#34;Meow&amp;#34;&lt;/span>)) {
+std&lt;span style="font-weight:bold">::&lt;/span>cout &lt;span style="font-weight:bold">&amp;lt;&amp;lt;&lt;/span> &lt;span style="color:#b84">&amp;#34;Meow&lt;/span>&lt;span style="color:#b84">\n&lt;/span>&lt;span style="color:#b84">&amp;#34;&lt;/span>;
+}
+&lt;span style="font-weight:bold">if&lt;/span> (ImGui&lt;span style="font-weight:bold">::&lt;/span>Button(&lt;span style="color:#b84">&amp;#34;Meow&amp;#34;&lt;/span>)) {
+std&lt;span style="font-weight:bold">::&lt;/span>cout &lt;span style="font-weight:bold">&amp;lt;&amp;lt;&lt;/span> &lt;span style="color:#b84">&amp;#34;Purr&lt;/span>&lt;span style="color:#b84">\n&lt;/span>&lt;span style="color:#b84">&amp;#34;&lt;/span>;
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>The first button works as expected, but the second doesn&amp;rsquo;t work at all! These are the things that can happen when collisions occur between IDs. This won&amp;rsquo;t happen most of the time, after all there&amp;rsquo;s mostly no need to place two buttons which say the same thing in one window. But what if you &lt;em>really&lt;/em> need these two &amp;ldquo;Meow&amp;rdquo; buttons? The solution is simple: you just have to add &amp;ldquo;##&amp;rdquo; and some stuff after that to resolve the collision:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp">&lt;span style="font-weight:bold">if&lt;/span> (ImGui&lt;span style="font-weight:bold">::&lt;/span>Button(&lt;span style="color:#b84">&amp;#34;Meow&amp;#34;&lt;/span>)) {
+std&lt;span style="font-weight:bold">::&lt;/span>cout &lt;span style="font-weight:bold">&amp;lt;&amp;lt;&lt;/span> &lt;span style="color:#b84">&amp;#34;Meow&lt;/span>&lt;span style="color:#b84">\n&lt;/span>&lt;span style="color:#b84">&amp;#34;&lt;/span>;
+}
+&lt;span style="font-weight:bold">if&lt;/span> (ImGui&lt;span style="font-weight:bold">::&lt;/span>Button(&lt;span style="color:#b84">&amp;#34;Meow##Second&amp;#34;&lt;/span>)) {
+std&lt;span style="font-weight:bold">::&lt;/span>cout &lt;span style="font-weight:bold">&amp;lt;&amp;lt;&lt;/span> &lt;span style="color:#b84">&amp;#34;Purr&lt;/span>&lt;span style="color:#b84">\n&lt;/span>&lt;span style="color:#b84">&amp;#34;&lt;/span>;
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>All the text after &amp;ldquo;##&amp;rdquo; is not displayed and only used to give unique IDs to widgets with same labels.
+IDs should be unique in the same scope, so it&amp;rsquo;s okay to have two widgets with the same label in two different windows or have one of them in some tree or list (trees, lists and some other widgets have their own scopes, so collisions won&amp;rsquo;t happen between items in them and other items).&lt;/p>
+&lt;p>Let&amp;rsquo;s look at another situation. Suppose you have an array of &lt;code>int&lt;/code>s:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp">std&lt;span style="font-weight:bold">::&lt;/span>array&lt;span style="font-weight:bold">&amp;lt;&lt;/span>&lt;span style="color:#458;font-weight:bold">int&lt;/span>, &lt;span style="color:#099">10&lt;/span>&lt;span style="font-weight:bold">&amp;gt;&lt;/span> arr &lt;span style="font-weight:bold">=&lt;/span> { &lt;span style="color:#099">0&lt;/span> };
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>And now you want to create a bunch of &lt;code>InputInt&lt;/code> widgets for each array element. &lt;code>ImGui::PushID&lt;/code>/&lt;code>PopID&lt;/code> come to the rescue! You can push &lt;code>int&lt;/code>s, &lt;code>const char*&lt;/code> or &lt;code>void*&lt;/code> as IDs which will be appended to the label of the next created widget (but won&amp;rsquo;t be shown). For example, you can do this:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp">&lt;span style="font-weight:bold">for&lt;/span> (&lt;span style="color:#458;font-weight:bold">int&lt;/span> i &lt;span style="font-weight:bold">=&lt;/span> &lt;span style="color:#099">0&lt;/span>; i &lt;span style="font-weight:bold">&amp;lt;&lt;/span> arr.size(); &lt;span style="font-weight:bold">++&lt;/span>i) {
+ImGui&lt;span style="font-weight:bold">::&lt;/span>PushID(i);
+ImGui&lt;span style="font-weight:bold">::&lt;/span>InputInt(&lt;span style="color:#b84">&amp;#34;##&amp;#34;&lt;/span>, &lt;span style="font-weight:bold">&amp;amp;&lt;/span>arr[i]);
+ImGui&lt;span style="font-weight:bold">::&lt;/span>PopID();
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>There are some situations where you don&amp;rsquo;t have an &lt;code>int&lt;/code> which you can use as part of ID, for example if you want to use for-ranged loop with the &lt;code>std::array&lt;/code>. In that case, you can use pointers to elements of the array which will be unique:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp">&lt;span style="font-weight:bold">for&lt;/span> (&lt;span style="font-weight:bold">auto&lt;/span>&lt;span style="font-weight:bold">&amp;amp;&lt;/span> elem : arr) {
+ImGui&lt;span style="font-weight:bold">::&lt;/span>PushID(&lt;span style="font-weight:bold">&amp;amp;&lt;/span>elem);
+ImGui&lt;span style="font-weight:bold">::&lt;/span>InputInt(&lt;span style="color:#b84">&amp;#34;##&amp;#34;&lt;/span>, &lt;span style="font-weight:bold">&amp;amp;&lt;/span>elem);
+ImGui&lt;span style="font-weight:bold">::&lt;/span>PopID();
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="getting-back-to-the-context-of-the-window-tree-etc">Getting back to the context of the window, tree, etc.&lt;/h2>
+&lt;p>Suppose that you need to add some stuff to the window you&amp;rsquo;ve created before but you already called &lt;code>ImGui::End&lt;/code>. No problem, just call &lt;code>ImGui::Begin&lt;/code> with the name of the window in which you want to append stuff. Here&amp;rsquo;s an example:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp">ImGui&lt;span style="font-weight:bold">::&lt;/span>Begin(&lt;span style="color:#b84">&amp;#34;First window&amp;#34;&lt;/span>); &lt;span style="color:#998;font-style:italic">// begin first window
+&lt;/span>&lt;span style="color:#998;font-style:italic">// some stuff
+&lt;/span>&lt;span style="color:#998;font-style:italic">&lt;/span>ImGui&lt;span style="font-weight:bold">::&lt;/span>End();
+ImGui&lt;span style="font-weight:bold">::&lt;/span>Begin(&lt;span style="color:#b84">&amp;#34;Another window&amp;#34;&lt;/span>); &lt;span style="color:#998;font-style:italic">// begin second window
+&lt;/span>&lt;span style="color:#998;font-style:italic">// some another stuff
+&lt;/span>&lt;span style="color:#998;font-style:italic">&lt;/span>ImGui&lt;span style="font-weight:bold">::&lt;/span>End();
+&lt;span style="color:#998;font-style:italic">// oops, forgot to add some stuff!
+&lt;/span>&lt;span style="color:#998;font-style:italic">// let&amp;#39;s go back to the context of the first window
+&lt;/span>&lt;span style="color:#998;font-style:italic">&lt;/span>ImGui&lt;span style="font-weight:bold">::&lt;/span>Begin(&lt;span style="color:#b84">&amp;#34;First window&amp;#34;&lt;/span>);
+&lt;span style="color:#998;font-style:italic">// forgotten stuff
+&lt;/span>&lt;span style="color:#998;font-style:italic">&lt;/span>ImGui&lt;span style="font-weight:bold">::&lt;/span>End();
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="inputfloatn--struct">InputFloatN + struct&lt;/h2>
+&lt;p>Sometimes it&amp;rsquo;s useful to use &lt;code>InputFloat2&lt;/code> or &lt;code>InputFloat4&lt;/code> with your point or rectangle structs which can be defined like this:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp">&lt;span style="font-weight:bold">struct&lt;/span> &lt;span style="color:#458;font-weight:bold">Point&lt;/span> {
+&lt;span style="color:#458;font-weight:bold">float&lt;/span> x;
+&lt;span style="color:#458;font-weight:bold">float&lt;/span> y;
+};
+&lt;span style="font-weight:bold">struct&lt;/span> &lt;span style="color:#458;font-weight:bold">Rect&lt;/span> {
+&lt;span style="color:#458;font-weight:bold">float&lt;/span> x;
+&lt;span style="color:#458;font-weight:bold">float&lt;/span> y;
+&lt;span style="color:#458;font-weight:bold">float&lt;/span> w;
+&lt;span style="color:#458;font-weight:bold">float&lt;/span> h;
+};
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Using them with &lt;code>InputFloat2&lt;/code> or &lt;code>InputFloat4&lt;/code> is easy:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp">Point p{ &lt;span style="color:#099">0.f&lt;/span>, &lt;span style="color:#099">0.f&lt;/span> };
+Rect r{ &lt;span style="color:#099">0.f&lt;/span>, &lt;span style="color:#099">0.f&lt;/span>, &lt;span style="color:#099">0.f&lt;/span>, &lt;span style="color:#099">0.f&lt;/span> };
+&lt;/code>&lt;/pre>&lt;/div>&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp">ImGui&lt;span style="font-weight:bold">::&lt;/span>InputFloat2(&lt;span style="color:#b84">&amp;#34;Point&amp;#34;&lt;/span>, &lt;span style="font-weight:bold">&amp;amp;&lt;/span>p.x);
+ImGui&lt;span style="font-weight:bold">::&lt;/span>InputFloat4(&lt;span style="color:#b84">&amp;#34;Rect&amp;#34;&lt;/span>, &lt;span style="font-weight:bold">&amp;amp;&lt;/span>r.x);
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>This works because both &lt;code>Point&lt;/code> and &lt;code>Rect&lt;/code> structs are &lt;a href="http://en.cppreference.com/w/cpp/concept/PODType">POD&lt;/a> and don&amp;rsquo;t have &amp;ldquo;holes&amp;rdquo; in them, so the data they store is contiguous and can be interpreted as array of floats.&lt;/p>
+&lt;p>This method is not very safe, of course, so use it at your own risk. Someone can modify the struct and this may break your code which assumed that the floats you want to modify are stored contiguously. Unfortunately, there&amp;rsquo;s no way to pass array of pointers to &lt;code>InputFloat2&lt;/code> or &lt;code>InputFloat4&lt;/code>, but you can easily create your own solution. Let&amp;rsquo;s make a function which creates a widget similar to &lt;code>InputFloat4&lt;/code> and uses members of &lt;code>Rect&lt;/code> struct explicitly:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp">&lt;span style="font-weight:bold">namespace&lt;/span> imgui_util {
+&lt;span style="color:#458;font-weight:bold">bool&lt;/span> &lt;span style="color:#900;font-weight:bold">InputRect&lt;/span>(&lt;span style="font-weight:bold">const&lt;/span> &lt;span style="color:#458;font-weight:bold">char&lt;/span>&lt;span style="font-weight:bold">*&lt;/span> label, Rect&lt;span style="font-weight:bold">*&lt;/span> rectPtr,
+&lt;span style="color:#458;font-weight:bold">int&lt;/span> decimal_precision &lt;span style="font-weight:bold">=&lt;/span> &lt;span style="font-weight:bold">-&lt;/span>&lt;span style="color:#099">1&lt;/span>, ImGuiInputTextFlags extra_flags &lt;span style="font-weight:bold">=&lt;/span> &lt;span style="color:#099">0&lt;/span>)
+{
+ImGui&lt;span style="font-weight:bold">::&lt;/span>PushID(label);
+ImGui&lt;span style="font-weight:bold">::&lt;/span>BeginGroup();
+&lt;span style="color:#458;font-weight:bold">bool&lt;/span> valueChanged &lt;span style="font-weight:bold">=&lt;/span> &lt;span style="color:#999">false&lt;/span>;
+std&lt;span style="font-weight:bold">::&lt;/span>array&lt;span style="font-weight:bold">&amp;lt;&lt;/span>&lt;span style="color:#458;font-weight:bold">float&lt;/span>&lt;span style="font-weight:bold">*&lt;/span>, &lt;span style="color:#099">4&lt;/span>&lt;span style="font-weight:bold">&amp;gt;&lt;/span> arr &lt;span style="font-weight:bold">=&lt;/span> { &lt;span style="font-weight:bold">&amp;amp;&lt;/span>rectPtr&lt;span style="font-weight:bold">-&amp;gt;&lt;/span>x, &lt;span style="font-weight:bold">&amp;amp;&lt;/span>rectPtr&lt;span style="font-weight:bold">-&amp;gt;&lt;/span>y,
+&lt;span style="font-weight:bold">&amp;amp;&lt;/span>rectPtr&lt;span style="font-weight:bold">-&amp;gt;&lt;/span>w, &lt;span style="font-weight:bold">&amp;amp;&lt;/span>rectPtr&lt;span style="font-weight:bold">-&amp;gt;&lt;/span>h };
+&lt;span style="font-weight:bold">for&lt;/span> (&lt;span style="font-weight:bold">auto&lt;/span>&lt;span style="font-weight:bold">&amp;amp;&lt;/span> elem : arr) {
+ImGui&lt;span style="font-weight:bold">::&lt;/span>PushID(elem);
+ImGui&lt;span style="font-weight:bold">::&lt;/span>PushItemWidth(&lt;span style="color:#099">64.f&lt;/span>);
+valueChanged &lt;span style="font-weight:bold">|=&lt;/span> ImGui&lt;span style="font-weight:bold">::&lt;/span>InputFloat(&lt;span style="color:#b84">&amp;#34;##arr&amp;#34;&lt;/span>, elem, &lt;span style="color:#099">0&lt;/span>, &lt;span style="color:#099">0&lt;/span>,
+decimal_precision, extra_flags);
+ImGui&lt;span style="font-weight:bold">::&lt;/span>PopID();
+ImGui&lt;span style="font-weight:bold">::&lt;/span>SameLine();
+}
+ImGui&lt;span style="font-weight:bold">::&lt;/span>SameLine();
+ImGui&lt;span style="font-weight:bold">::&lt;/span>TextUnformatted(label);
+ImGui&lt;span style="font-weight:bold">::&lt;/span>EndGroup();
+ImGui&lt;span style="font-weight:bold">::&lt;/span>PopID(); &lt;span style="color:#998;font-style:italic">// pop label id;
+&lt;/span>&lt;span style="color:#998;font-style:italic">&lt;/span>
+&lt;span style="font-weight:bold">return&lt;/span> valueChanged;
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>And now you can do this:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp">imgui_util&lt;span style="font-weight:bold">::&lt;/span>InputRect(&lt;span style="color:#b84">&amp;#34;Rect&amp;#34;&lt;/span>, &lt;span style="font-weight:bold">&amp;amp;&lt;/span>r);
+&lt;/code>&lt;/pre>&lt;/div>&lt;!-- raw HTML omitted -->
+&lt;!-- raw HTML omitted -->
+&lt;h2 id="using-imgui-with-stl">Using ImGui with STL&lt;/h2>
+&lt;p>There are lots of things to be said about using ImGui with STL. ImGui doesn&amp;rsquo;t use STL at all and users have to pass raw arrays and &lt;code>const char*&lt;/code>s instead of &lt;code>std::vector&lt;/code>s and &lt;code>std::string&lt;/code>s, so you can&amp;rsquo;t just use STL and some modern C++ right away, but it can be done with some work.&lt;/p>
+&lt;h3 id="arrays">Arrays&lt;/h3>
+&lt;p>Some widgets require you to use raw arrays but those are not the best because you can&amp;rsquo;t use them with algorithms, for ranged loops, etc. And the other problem is that you have to manage the memory of variable size arrays yourself using &lt;code>new&lt;/code> and &lt;code>delete&lt;/code>. Using &lt;code>std::array&lt;/code> with &lt;code>Imgui::InputInt4&lt;/code> which expects you to pass raw array is easy, just do it like this:&lt;/p>
+&lt;!-- raw HTML omitted -->
+&lt;!-- raw HTML omitted -->
+&lt;!-- raw HTML omitted -->
+&lt;!-- raw HTML omitted -->
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp">std&lt;span style="font-weight:bold">::&lt;/span>array&lt;span style="font-weight:bold">&amp;lt;&lt;/span>&lt;span style="color:#458;font-weight:bold">int&lt;/span>, &lt;span style="color:#099">4&lt;/span>&lt;span style="font-weight:bold">&amp;gt;&lt;/span> arr2 &lt;span style="font-weight:bold">=&lt;/span> { &lt;span style="color:#099">0&lt;/span> };
+&lt;/code>&lt;/pre>&lt;/div>&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp">ImGui&lt;span style="font-weight:bold">::&lt;/span>InputInt4(&lt;span style="color:#b84">&amp;#34;IntRect&amp;#34;&lt;/span>, arr2.data());
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;code>std::array::data&lt;/code> returns a pointer to raw int array which can be passed to &lt;code>ImGui::InputInt4&lt;/code>.&lt;/p>
+&lt;p>The same can be done with &lt;code>std::vector&lt;/code>s which are guaranteed to be contiguous, so you can just use &lt;code>std::vector::data&lt;/code> the same way:&lt;/p>
+&lt;!-- raw HTML omitted -->
+&lt;!-- raw HTML omitted -->
+&lt;!-- raw HTML omitted -->
+&lt;!-- raw HTML omitted -->
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp">std&lt;span style="font-weight:bold">::&lt;/span>vector&lt;span style="font-weight:bold">&amp;lt;&lt;/span>&lt;span style="color:#458;font-weight:bold">int&lt;/span>&lt;span style="font-weight:bold">&amp;gt;&lt;/span> arr3(&lt;span style="color:#099">4&lt;/span>, &lt;span style="color:#099">0&lt;/span>);
+&lt;/code>&lt;/pre>&lt;/div>&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp">ImGui&lt;span style="font-weight:bold">::&lt;/span>InputInt4(&lt;span style="color:#b84">&amp;#34;IntRect&amp;#34;&lt;/span>, arr3.data());
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="combobox-listbox">ComboBox, ListBox&lt;/h3>
+&lt;p>&lt;code>ComboBox&lt;/code> and &lt;code>ListBox&lt;/code> can be used with arrays of &lt;code>const char&lt;/code>s, but what if you have &lt;code>std::vector&amp;lt;std::string&amp;gt;&lt;/code> instead? No problem, just use &lt;code>BeginCombo&lt;/code>/&lt;code>EndCombo&lt;/code>/&lt;code>Selectable&lt;/code>:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp">std&lt;span style="font-weight:bold">::&lt;/span>vector items{&lt;span style="color:#b84">&amp;#34;a&amp;#34;&lt;/span>, &lt;span style="color:#b84">&amp;#34;b&amp;#34;&lt;/span>, &lt;span style="color:#b84">&amp;#34;c&amp;#34;&lt;/span>}; &lt;span style="color:#998;font-style:italic">// defined somewhere
+&lt;/span>&lt;span style="color:#998;font-style:italic">&lt;/span>&lt;span style="color:#458;font-weight:bold">int&lt;/span> selectedIndex &lt;span style="font-weight:bold">=&lt;/span> &lt;span style="color:#099">0&lt;/span>; &lt;span style="color:#998;font-style:italic">// you need to store this state somewhere
+&lt;/span>&lt;span style="color:#998;font-style:italic">&lt;/span>
+&lt;span style="color:#998;font-style:italic">// later in your code...
+&lt;/span>&lt;span style="color:#998;font-style:italic">&lt;/span>&lt;span style="font-weight:bold">if&lt;/span> (ImGui&lt;span style="font-weight:bold">::&lt;/span>BeginCombo(&lt;span style="color:#b84">&amp;#34;combo&amp;#34;&lt;/span>)) {
+&lt;span style="font-weight:bold">for&lt;/span> (&lt;span style="color:#458;font-weight:bold">int&lt;/span> i &lt;span style="font-weight:bold">=&lt;/span> &lt;span style="color:#099">0&lt;/span>; i &lt;span style="font-weight:bold">&amp;lt;&lt;/span> items.size(); &lt;span style="font-weight:bold">++&lt;/span>i) {
+&lt;span style="font-weight:bold">const&lt;/span> &lt;span style="color:#458;font-weight:bold">bool&lt;/span> isSelected &lt;span style="font-weight:bold">=&lt;/span> (selectedIndex &lt;span style="font-weight:bold">==&lt;/span> i);
+&lt;span style="font-weight:bold">if&lt;/span> (ImGui&lt;span style="font-weight:bold">::&lt;/span>Selectable(items[i], isSelected)) {
+selectedIndex &lt;span style="font-weight:bold">=&lt;/span> i;
+}
+&lt;span style="color:#998;font-style:italic">// Set the initial focus when opening the combo
+&lt;/span>&lt;span style="color:#998;font-style:italic">&lt;/span> &lt;span style="color:#998;font-style:italic">// (scrolling + keyboard navigation focus)
+&lt;/span>&lt;span style="color:#998;font-style:italic">&lt;/span> &lt;span style="font-weight:bold">if&lt;/span> (isSelected) {
+ImGui&lt;span style="font-weight:bold">::&lt;/span>SetItemDefaultFocus();
+}
+}
+ImGui&lt;span style="font-weight:bold">::&lt;/span>EndCombo();
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="inputtext-and-stdstring">InputText and std::string&lt;/h3>
+&lt;p>Dear ImGui lets you pass char array in &lt;code>InputText&lt;/code> and then it modifies it when user enters some text in the input field. The problem is that it&amp;rsquo;s hard to know the size of input in advance, so you have to allocate large enough buffer and then pass it in &lt;code>InputText&lt;/code>.&lt;/p>
+&lt;p>However, there&amp;rsquo;s a special overload for &lt;code>InputText&lt;/code> and &lt;code>InputTextMultiline&lt;/code> which allows you to use &lt;code>std::string&lt;/code> with it. You need to include a special header to access it:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp">&lt;span style="color:#999;font-weight:bold">#include&lt;/span> &lt;span style="color:#999;font-weight:bold">&amp;lt;misc/cpp/imgui_stdlib.h&amp;gt;&lt;/span>&lt;span style="color:#999;font-weight:bold">
+&lt;/span>&lt;span style="color:#999;font-weight:bold">&lt;/span>
+&lt;span style="font-weight:bold">struct&lt;/span> &lt;span style="color:#458;font-weight:bold">Person&lt;/span> {
+std&lt;span style="font-weight:bold">::&lt;/span>string name;
+};
+&lt;span style="color:#998;font-style:italic">// later in code...
+&lt;/span>&lt;span style="color:#998;font-style:italic">&lt;/span>&lt;span style="font-weight:bold">if&lt;/span> (ImGui&lt;span style="font-weight:bold">::&lt;/span>InputText(&lt;span style="color:#b84">&amp;#34;name&amp;#34;&lt;/span>, &lt;span style="font-weight:bold">&amp;amp;&lt;/span>person.name) { ... }
+&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>Using Dear ImGui with SFML for creating awesome game dev tools</title><link>https://eliasdaler.github.io/hugo-test/posts/using-imgui-with-sfml-pt-1/</link><pubDate>Sun, 10 Jul 2016 15:42:00 +0300</pubDate><guid>https://eliasdaler.github.io/hugo-test/posts/using-imgui-with-sfml-pt-1/</guid><description>&lt;p>Related article: &lt;a href="https://eliasdaler.github.io/hugo-test/posts/using-imgui-with-sfml-pt-2/" title="About Us">Using ImGui with modern C++ and STL&lt;/a>&lt;/p>
+&lt;hr>
+&lt;p>This is the first part of tutorial about Dear ImGui (AKA ImGui) and it&amp;rsquo;ll show you how to set it up with SFML. The second part will be library agnostic and will talk about common ways of doing stuff in ImGui, some awesome widgets and some useful STL overloads.&lt;/p>
+&lt;figure>&lt;img src="imgui-widgets.png"/>&lt;figcaption>
+&lt;h4>Different Dear ImGui widgets&lt;/h4>
+&lt;/figcaption>
+&lt;/figure>
+&lt;div>
+&lt;h2>Table Of Contents&lt;/h2>
+&lt;nav id="TableOfContents">
+&lt;ul>
+&lt;li>&lt;a href="#introduction">Introduction&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#dear-imgui-and-immediate-mode-gui-concept">Dear ImGui and immediate mode GUI concept&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#using-imgui-sfml">Using ImGui-SFML&lt;/a>
+&lt;ul>
+&lt;li>&lt;a href="#option-a-using-imgui-sfml-with-cmake">Option A. Using ImGui-SFML with CMake&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#option-b-using-imgui-sfml-with-vcpkg-and-conan">Option B. Using ImGui-SFML with vcpkg and Conan&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#option-c-manual-integration">Option C. Manual integration&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;a href="#useful-overloads-for-sfml">Useful overloads for SFML&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#conclusion">Conclusion&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/nav>
+&lt;/div>
+&lt;hr>
+&lt;h2 id="introduction">Introduction&lt;/h2>
+&lt;p>Having good content creation (level editor, resource editor, etc.) and debugging
+tools for your game is very important and can lead to productivity and
+creativity boost. Here are some examples of tools I managed to make with ImGui
+for my games.&lt;/p>
+&lt;figure>&lt;img src="tomb-painter-dev-tools.png"/>&lt;figcaption>
+&lt;h4>Tomb Painter dev tools&lt;/h4>
+&lt;/figcaption>
+&lt;/figure>
+&lt;figure>&lt;img src="recreation-level-editor.gif"/>&lt;figcaption>
+&lt;h4>Level editor in Re:creation&lt;/h4>
+&lt;/figcaption>
+&lt;/figure>
+&lt;figure>&lt;img src="recreation-lua-console.gif"/>&lt;figcaption>
+&lt;h4>Lua console&lt;/h4>
+&lt;/figcaption>
+&lt;/figure>
+&lt;figure>&lt;img src="recreation-animation-editor.gif"/>&lt;figcaption>
+&lt;h4>Animation editor&lt;/h4>
+&lt;/figcaption>
+&lt;/figure>
+&lt;p>As you can see there&amp;rsquo;s a wide range of widgets that ImGui provides and there are lots of other great examples of how other people use it here.&lt;/p>
+&lt;h2 id="dear-imgui-and-immediate-mode-gui-concept">Dear ImGui and immediate mode GUI concept&lt;/h2>
+&lt;p>Dear ImGui is an immediate mode GUI library which makes making GUI for all kinds of tools very easy.&lt;/p>
+&lt;p>&lt;strong>Immediate mode GUI&lt;/strong> is a bit different to what people think when they hear “GUI” (“retained mode” is a classic way of doing GUI).
+Immediate mode GUI is a way of doing GUI which involves creating and drawing widgets in each frame. Instead of creating some &lt;code>Button&lt;/code> object and adding a callback to it, you write something like&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp">&lt;span style="font-weight:bold">if&lt;/span> (ImGui&lt;span style="font-weight:bold">::&lt;/span>Button(&lt;span style="color:#b84">&amp;#34;Some Button&amp;#34;&lt;/span>)) {
+... &lt;span style="color:#998;font-style:italic">// code which will be called on button pressed
+&lt;/span>&lt;span style="color:#998;font-style:italic">&lt;/span>}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Simple as that!&lt;/p>
+&lt;p>For a great in-depth talk on this concept, I recommend to check out &lt;a href="https://mollyrocket.com/861">Casey Muratori&amp;rsquo;s talk on IMGUI&lt;/a>.&lt;/p>
+&lt;p>Back to Dear ImGui. It&amp;rsquo;s:&lt;/p>
+&lt;ul>
+&lt;li>MIT Licensed&lt;/li>
+&lt;li>Very fast and light&lt;/li>
+&lt;li>Constantly updated and expanded&lt;/li>
+&lt;li>Doesn&amp;rsquo;t do dynamic allocation/deallocation&lt;/li>
+&lt;li>Very portable – has lots of bindings for different libraries and frameworks&lt;/li>
+&lt;li>Easily expandable&lt;/li>
+&lt;/ul>
+&lt;h2 id="using-imgui-sfml">Using ImGui-SFML&lt;/h2>
+&lt;p>&lt;a href="https://github.com/eliasdaler/imgui-sfml">ImGui-SFML&lt;/a> is a binding I wrote to
+simplify usage of ImGui with SFML. Here&amp;rsquo;s how you can use it.&lt;/p>
+&lt;h3 id="option-a-using-imgui-sfml-with-cmake">Option A. Using ImGui-SFML with CMake&lt;/h3>
+&lt;blockquote class="hint-info">
+You can just see this &lt;a href="https://github.com/eliasdaler/imgui-sfml-fetchcontent">example&lt;/a> of how to use FetchContent to make it easy.
+&lt;/blockquote>
+&lt;p>First, you need to download Dear ImGui, ImGui-SFML and build SFML somewhere.&lt;/p>
+&lt;p>Then, run this where you want to build ImGui-SFML:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sh" data-lang="sh">cmake &amp;lt;ImGui-SFML repo folder&amp;gt; -DIMGUI_DIR&lt;span style="font-weight:bold">=&lt;/span>&amp;lt;ImGui repo folder&amp;gt; &lt;span style="color:#b84">\
+&lt;/span>&lt;span style="color:#b84">&lt;/span> -DSFML_DIR&lt;span style="font-weight:bold">=&lt;/span>&amp;lt;path with built SFML&amp;gt;
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>If you have SFML installed on your system, you don&amp;rsquo;t need to set SFML_DIR during
+configuration.&lt;/p>
+&lt;p>You can also specify &lt;code>BUILD_SHARED_LIBS=ON&lt;/code> to build ImGui-SFML as a shared library. To build ImGui-SFML examples, set &lt;code>IMGUI_SFML_BUILD_EXAMPLES=ON&lt;/code>.&lt;/p>
+&lt;p>After the building, you can install the library on your system by running:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sh" data-lang="sh">cmake --build . --target install
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>If you set &lt;code>CMAKE_INSTALL_PREFIX&lt;/code> during configuration, you can install ImGui-SFML locally.&lt;/p>
+&lt;p>Integrating into your project is simple:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cmake" data-lang="cmake">&lt;span style="color:#999">find_package&lt;/span>(&lt;span style="color:#b84">ImGui-SFML&lt;/span> &lt;span style="color:#b84">REQUIRED&lt;/span>)&lt;span style="color:#a61717;background-color:#e3d2d2">
+&lt;/span>&lt;span style="color:#a61717;background-color:#e3d2d2">&lt;/span>&lt;span style="color:#999">target_link_libraries&lt;/span>(&lt;span style="color:#b84">my_target&lt;/span> &lt;span style="color:#b84">PRIVATE&lt;/span> &lt;span style="color:#b84">ImGui-SFML::ImGui-SFML&lt;/span>)&lt;span style="color:#a61717;background-color:#e3d2d2">
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>If CMake can&amp;rsquo;t find ImGui-SFML on your system (or you didn&amp;rsquo;t install it), just define &lt;code>ImGui-SFML_DIR&lt;/code> before calling &lt;code>find_package&lt;/code>.&lt;/p>
+&lt;h3 id="option-b-using-imgui-sfml-with-vcpkg-and-conan">Option B. Using ImGui-SFML with vcpkg and Conan&lt;/h3>
+&lt;blockquote class="hint-warning">
+I don&amp;rsquo;t maintain these packages so they might lag behind, so building &lt;code>ImGui-SFML&lt;/code> manually is recommended
+&lt;/blockquote>
+&lt;ul>
+&lt;li>&lt;a href="https://vcpkg.info/port/imgui-sfml">vcpkg package&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://bincrafters.jfrog.io/ui/packages/conan:%2F%2Fimgui-sfml?name=imgui-sfml&amp;amp;type=packages">Conan package&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;h3 id="option-c-manual-integration">Option C. Manual integration&lt;/h3>
+&lt;p>This is slightly more complex&amp;hellip;&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>Use SFML to get a simple window to show up. Follow the “Getting started” tutorial &lt;a href="http://www.sfml-dev.org/tutorials/2.3/">here&lt;/a> if you have never done it before.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Download &lt;a href="https://github.com/ocornut/imgui">Dear ImGui&lt;/a>.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Download &lt;a href="https://github.com/eliasdaler/imgui-sfml">ImGui-SFML&lt;/a>.&lt;/p>
+&lt;p>&lt;strong>Important&lt;/strong>: you have to add the contents of &lt;strong>imconfig-SFML.h&lt;/strong> to ImGui&amp;rsquo;s &lt;strong>imconfig.h&lt;/strong> to get implicit &lt;code>ImVec2&lt;/code> {% icon fa-arrows-h %} &lt;code>sf::Vector2f&lt;/code> conversion working!
+{: .message}&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Add ImGui and ImGui-SFML directories to your include directories.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Add these files to your build / project:&lt;/p>
+&lt;ul>
+&lt;li>imgui.cpp&lt;/li>
+&lt;li>imgui_draw.cpp&lt;/li>
+&lt;li>imgui_widgets.cpp&lt;/li>
+&lt;li>imgui-SFML.cpp&lt;/li>
+&lt;li>imgui_demo.cpp&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>(Optional) If you get linking errors, link OpenGL to your project.&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;p>Here&amp;rsquo;s a complete example of using ImGui and SMFL together.&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp">&lt;span style="color:#999;font-weight:bold">#include&lt;/span> &lt;span style="color:#999;font-weight:bold">&amp;#34;imgui.h&amp;#34;&lt;/span>&lt;span style="color:#999;font-weight:bold">
+&lt;/span>&lt;span style="color:#999;font-weight:bold">#include&lt;/span> &lt;span style="color:#999;font-weight:bold">&amp;#34;imgui-SFML.h&amp;#34;&lt;/span>&lt;span style="color:#999;font-weight:bold">
+&lt;/span>&lt;span style="color:#999;font-weight:bold">&lt;/span>
+&lt;span style="color:#999;font-weight:bold">#include&lt;/span> &lt;span style="color:#999;font-weight:bold">&amp;lt;SFML/Graphics/CircleShape.hpp&amp;gt;&lt;/span>&lt;span style="color:#999;font-weight:bold">
+&lt;/span>&lt;span style="color:#999;font-weight:bold">#include&lt;/span> &lt;span style="color:#999;font-weight:bold">&amp;lt;SFML/Graphics/RenderWindow.hpp&amp;gt;&lt;/span>&lt;span style="color:#999;font-weight:bold">
+&lt;/span>&lt;span style="color:#999;font-weight:bold">#include&lt;/span> &lt;span style="color:#999;font-weight:bold">&amp;lt;SFML/System/Clock.hpp&amp;gt;&lt;/span>&lt;span style="color:#999;font-weight:bold">
+&lt;/span>&lt;span style="color:#999;font-weight:bold">#include&lt;/span> &lt;span style="color:#999;font-weight:bold">&amp;lt;SFML/Window/Event.hpp&amp;gt;&lt;/span>&lt;span style="color:#999;font-weight:bold">
+&lt;/span>&lt;span style="color:#999;font-weight:bold">&lt;/span>
+&lt;span style="color:#458;font-weight:bold">int&lt;/span> &lt;span style="color:#900;font-weight:bold">main&lt;/span>() {
+sf&lt;span style="font-weight:bold">::&lt;/span>RenderWindow window(sf&lt;span style="font-weight:bold">::&lt;/span>VideoMode(&lt;span style="color:#099">640&lt;/span>, &lt;span style="color:#099">480&lt;/span>), &lt;span style="color:#b84">&amp;#34;ImGui + SFML = &amp;lt;3&amp;#34;&lt;/span>);
+window.setFramerateLimit(&lt;span style="color:#099">60&lt;/span>);
+ImGui&lt;span style="font-weight:bold">::&lt;/span>SFML&lt;span style="font-weight:bold">::&lt;/span>Init(window);
+sf&lt;span style="font-weight:bold">::&lt;/span>CircleShape shape(&lt;span style="color:#099">100.f&lt;/span>);
+shape.setFillColor(sf&lt;span style="font-weight:bold">::&lt;/span>Color&lt;span style="font-weight:bold">::&lt;/span>Green);
+sf&lt;span style="font-weight:bold">::&lt;/span>Clock deltaClock;
+&lt;span style="font-weight:bold">while&lt;/span> (window.isOpen()) {
+sf&lt;span style="font-weight:bold">::&lt;/span>Event event;
+&lt;span style="font-weight:bold">while&lt;/span> (window.pollEvent(event)) {
+ImGui&lt;span style="font-weight:bold">::&lt;/span>SFML&lt;span style="font-weight:bold">::&lt;/span>ProcessEvent(window, event);
+&lt;span style="font-weight:bold">if&lt;/span> (event.type &lt;span style="font-weight:bold">==&lt;/span> sf&lt;span style="font-weight:bold">::&lt;/span>Event&lt;span style="font-weight:bold">::&lt;/span>Closed) {
+window.close();
+}
+}
+ImGui&lt;span style="font-weight:bold">::&lt;/span>SFML&lt;span style="font-weight:bold">::&lt;/span>Update(window, deltaClock.restart());
+ImGui&lt;span style="font-weight:bold">::&lt;/span>Begin(&lt;span style="color:#b84">&amp;#34;Hello, world!&amp;#34;&lt;/span>);
+ImGui&lt;span style="font-weight:bold">::&lt;/span>Button(&lt;span style="color:#b84">&amp;#34;Look at this pretty button&amp;#34;&lt;/span>);
+ImGui&lt;span style="font-weight:bold">::&lt;/span>End();
+window.clear();
+window.draw(shape);
+ImGui&lt;span style="font-weight:bold">::&lt;/span>SFML&lt;span style="font-weight:bold">::&lt;/span>Render(window);
+window.display();
+}
+ImGui&lt;span style="font-weight:bold">::&lt;/span>SFML&lt;span style="font-weight:bold">::&lt;/span>Shutdown();
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>You&amp;rsquo;ll see something like this:&lt;/p>
+&lt;p>&lt;img src="rgb1.png" alt="First example">&lt;/p>
+&lt;p>Try to change some stuff. Double click on r/g/b field to set values precisely, or just drag some widgets to change window&amp;rsquo;s background color. Press the button to change window title.
+Here, it works!&lt;/p>
+&lt;p>&lt;img src="rgb2.png" alt="First example">
+Awesome! Now let&amp;rsquo;s see how it works.&lt;/p>
+&lt;p>ImGui is initialized by calling &lt;code>ImGui::SFML::Init&lt;/code> function to which you pass your &lt;code>sf::RenderWindow&lt;/code>. This creates internal default font atlas. See how you can use other fonts in &lt;a href="https://github.com/eliasdaler/imgui-sfml#fonts-how-to">Fonts how-to section&lt;/a> of imgui-sfml&amp;rsquo;s README.&lt;/p>
+&lt;p>Shutting down is done with &lt;code>ImGui::SFML::Shutdown&lt;/code> call which cleans some things up. (Deleting internal font atlas, if it&amp;rsquo;s used, for example).&lt;/p>
+&lt;p>There are two phases of using ImGui in your game loop: &lt;strong>update&lt;/strong> and &lt;strong>render&lt;/strong>.&lt;/p>
+&lt;p>&lt;strong>Updating&lt;/strong> consists of &lt;em>event processing&lt;/em>, &lt;em>state update&lt;/em> and &lt;em>widget update&lt;/em>. Event processing is done by calling &lt;code>ImGui::SFML::ProcessEvent&lt;/code> and it&amp;rsquo;s almost the same as processing SFML events. It&amp;rsquo;s used to process keyboard and mouse input and handle window resize and focus events. State update (which is being done by calling &lt;code>ImGui::SFML::Update&lt;/code>) updates delta time which ImGui uses internally, so you have to pass it using your delta time clock, as well as mouse coordinates (or your window relative to which mouse coordinates will be taken). &lt;code>ImGui::NewFrame&lt;/code> is also being called here and you can call ImGui widget creation functions after that. Calling stuff like &lt;code>ImGui::Button&lt;/code> or &lt;code>ImGui::Color3Edit&lt;/code> updates widgets and it also generates one draw list which is used for rendering later.&lt;/p>
+&lt;p>&lt;strong>Drawing&lt;/strong> is done with &lt;code>ImGui::SFML::Render&lt;/code> call.&lt;/p>
+&lt;blockquote class="hint-danger">
+Don&amp;rsquo;t call &lt;code>ImGui::Render&lt;/code>, only call &lt;code>ImGui::SFML::Render&lt;/code>
+&lt;/blockquote>
+&lt;blockquote class="hint-info">
+You must create all widgets between &lt;code>ImGui::SFML::Update()&lt;/code> and &lt;code>ImGui::Render()&lt;/code>.
+&lt;/blockquote>
+&lt;p>If you&amp;rsquo;re updating more than you draw, then you can either update ImGui once per frame or call &lt;code>ImGui::EndFrame&lt;/code> at the end of your update function.&lt;/p>
+&lt;p>Widgets are easily created by calling corresponding functions (more about them in the next part). For example, you can call &lt;code>ImGui::InputInt&lt;/code> and pass a pointer to int there.When you change widget&amp;rsquo;s value, the integer is changed too.
+Buttons work pretty easy too – they don&amp;rsquo;t need callbacks, you just wrap code which you want to call after the button is pressed in &lt;code>if(ImGui::Button(…)) { … }&lt;/code> and that&amp;rsquo;s all you have to do.&lt;/p>
+&lt;p>Call &lt;code>ImGui::ShowTestWindow&lt;/code> somewhere when you create widgets and you&amp;rsquo;ll get a nice window with lots of examples of ImGui stuff. This is very useful as example of how to do stuff with ImGui. Just look for the thing you want to make in this test window and you&amp;rsquo;ll easily find how to do it in corresponding part of imgui_demo.cpp.&lt;/p>
+&lt;h2 id="useful-overloads-for-sfml">Useful overloads for SFML&lt;/h2>
+&lt;p>There are also some useful overloads implemented in SFML ImGui binding. For example, you can use &lt;code>ImGui::Image&lt;/code> and &lt;code>ImGui::ImageButton&lt;/code> with &lt;code>sf::Textures&lt;/code> and &lt;code>sf::Sprites&lt;/code>! I&amp;rsquo;ve also defined implicit conversions between &lt;code>ImVec2&lt;/code> and &lt;code>sf::Vector2f&lt;/code>, so you can pass &lt;code>sf::Vector2f&lt;/code> to ImGui&amp;rsquo;s functions without needing to cast explicitly. You can also draw lines and rects with &lt;code>DrawLine&lt;/code>, &lt;code>DrawRect&lt;/code>, &lt;code>DrawRectFilled&lt;/code>.&lt;/p>
+&lt;h2 id="conclusion">Conclusion&lt;/h2>
+&lt;p>As you can see, using ImGui is easy and it&amp;rsquo;s easy to start doing really impressive and useful stuff with it right away. Thank you for reading this tutorial, I hope it was useful and that ImGui will help you make better tools and greater games as the result of having awesome tools.&lt;/p></description></item><item><title>CppCast</title><link>https://eliasdaler.github.io/hugo-test/posts/cppcast/</link><pubDate>Sat, 09 Jul 2016 01:05:00 +0300</pubDate><guid>https://eliasdaler.github.io/hugo-test/posts/cppcast/</guid><description>&lt;p>&lt;img src="cppcast.jpg" alt="Me on CppCast">&lt;/p>
+&lt;p>I recently gave an interview on &lt;strong>CppCast&lt;/strong>!
+Listen to it &lt;a href="http://cppcast.com/2016/07/elias-daler">here&lt;/a>.&lt;/p>
+&lt;p>Here are my some thoughts about CppCast and the episode.&lt;/p>
+&lt;p>&lt;!-- raw HTML omitted -->&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;h2 id="about-cppcast">About CppCast&lt;/h2>
+&lt;p>If you&amp;rsquo;re never heard of &lt;strong>CppCast&lt;/strong> before - it&amp;rsquo;s one of the most amazing podcasts ever! The guests are always interesting and the discussions are very informative. The hosts know what to ask and what to talk about - they&amp;rsquo;re C++ developers themselves.
+They also get awesome guests on the show. For example, there are episodes with people like &lt;a href="http://cppcast.com/2015/09/scott-meyers/">Scott Meyers&lt;/a>, &lt;a href="http://cppcast.com/2015/10/andrei-alexandrescu/">Andrei Alexandrescu&lt;/a> and &lt;a href="http://cppcast.com/2016/06/herb-sutter/">Herb Sutter&lt;/a>. These people are my heroes of programming, so it&amp;rsquo;s a big pleasure to be interviewed on the podcast of that caliber.&lt;/p>
+&lt;h2 id="episode-with-me">Episode with me&lt;/h2>
+&lt;p>I&amp;rsquo;ve never expected to be on the show so soon. I&amp;rsquo;ve joked about it: &amp;ldquo;Ah, I&amp;rsquo;ll be there in &lt;em>X&lt;/em> years when I get really successful&amp;rdquo;. It&amp;rsquo;s a big honor for me and I&amp;rsquo;m very thankful for Rob and Jason for making my dream of being on podcast come true.&lt;/p>
+&lt;p>I&amp;rsquo;m sorry if I come of kinda derpy or awkward at times during the interview. First of all, I was pretty nervous and secondly, English is not my native language and I don&amp;rsquo;t speak in it in real life at all.
+But still, I think I did pretty well and we discussed lots of neat stuff during the episode.&lt;/p>
+&lt;h2 id="if-you-want-to-learn-about-luac-integration-andor-read-my-other-blog-posts">If you want to learn about Lua/C++ integration and/or read my other blog posts&lt;/h2>
+&lt;p>This is my new blog, so check out my &lt;a href="https://eliasdaler.wordpress.com">old blog&lt;/a> for all the mentioned articles. If you want to start with Lua and C++, check out &lt;a href="https://eliasdaler.wordpress.com/2014/07/18/using-lua-with-cpp-luabridge/">LuaBridge tutorial&lt;/a> (though I recommend to use &lt;a href="https://github.com/ThePhD/sol2">sol2&lt;/a> as a binding library). If you want to see how you can use Lua in Practice, check out &lt;a href="https://eliasdaler.wordpress.com/2015/08/10/using-lua-and-cpp-in-practice/">Using Lua in practice&lt;/a> articles (there are five of them!). And check out &lt;a href="https://eliasdaler.wordpress.com/tag/dev-log/">Re:creation dev logs&lt;/a> for in-depth explanation of what I did about the game and how I make my game engine.&lt;/p>
+&lt;p>The new articles are coming very soon, check out what I&amp;rsquo;m planning to write &lt;a href="https://eliasdaler.github.io/first-post">here&lt;/a> (I promised that there&amp;rsquo;ll be some when the podcast airs, but I didn&amp;rsquo;t think that episode will come out so soon, so sorry about that). I think these articles will be even better, there&amp;rsquo;s a lot of things I&amp;rsquo;ve learned during the last few years.&lt;/p>
+&lt;p>Thanks for reading and listening. Please let me know what you thought of the episode in the comments!&lt;/p></description></item></channel></rss>
