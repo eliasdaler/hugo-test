@@ -271,7 +271,8 @@ main#content div.highlight pre {
     border: 1px solid;
 }
 
-main#content p code {
+main#content p code,
+main#content blockquote code {
     background-color: #f6f6f6;
     padding: .2em .4em;
     font-size: 90%;
@@ -291,16 +292,16 @@ footer#footer {
 
 blockquote.hint-info {
     border-left-color: #66bbff !important;
-    background-color: #66bbff80;
+    background-color: #66bbff60;
 }
 
 
 blockquote.hint-warning {
     border-left-color: #ffdd66 !important;
-    background-color: #ffdd6680;
+    background-color: #ffdd6660;
 }
 
 blockquote.hint-danger {
     border-left-color: #ff6666 !important;
-    background-color: #ff666680;
+    background-color: #ff666660;
 }
