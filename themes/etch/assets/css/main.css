@@ -305,3 +305,17 @@ blockquote.hint-danger {
     border-left-color: #ff6666 !important;
     background-color: #ff666660;
 }
+
+table {
+    border-collapse: collapse;
+}
+
+th, td {
+    border: 1px solid #dee2e6;
+    padding: .75rem;
+}
+
+thead {
+    font-weight: 400;
+    text-align: left;
+}

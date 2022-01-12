@@ -1,6 +1,7 @@
 ---
 title: "Making and storing references to game objects (entities) in C++ and Lua"
 date: 2017-01-22T14:00:00+03:00
+draft: false
 tags: [C++, Lua, Gamedev, Tutorial]
 ---
 
