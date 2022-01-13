@@ -1,4 +1,167 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>C++ on Elias Daler's blog</title><link>https://eliasdaler.github.io/hugo-test/tags/c++/</link><description>Recent content in C++ on Elias Daler's blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Wed, 03 Oct 2018 21:00:00 +0300</lastBuildDate><atom:link href="https://eliasdaler.github.io/hugo-test/tags/c++/index.xml" rel="self" type="application/rss+xml"/><item><title>How to implement action sequences and cutscenes</title><link>https://eliasdaler.github.io/hugo-test/posts/how-to-implement-action-sequences-and-cutscenes/</link><pubDate>Wed, 03 Oct 2018 21:00:00 +0300</pubDate><guid>https://eliasdaler.github.io/hugo-test/posts/how-to-implement-action-sequences-and-cutscenes/</guid><description>&lt;h2 id="introduction">Introduction&lt;/h2>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>C++ on Elias Daler's blog</title><link>https://eliasdaler.github.io/hugo-test/tags/c++/</link><description>Recent content in C++ on Elias Daler's blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Sun, 06 Jan 2019 23:22:00 +0300</lastBuildDate><atom:link href="https://eliasdaler.github.io/hugo-test/tags/c++/index.xml" rel="self" type="application/rss+xml"/><item><title>Tomb Painter. The first dev log (2017-2018)</title><link>https://eliasdaler.github.io/hugo-test/posts/tomb-painter-first-dev-log/</link><pubDate>Sun, 06 Jan 2019 23:22:00 +0300</pubDate><guid>https://eliasdaler.github.io/hugo-test/posts/tomb-painter-first-dev-log/</guid><description>&lt;hr>
+&lt;p>Hello, everyone. Today I&amp;rsquo;m ready to officially announce and talk about the game I&amp;rsquo;m currently working on!&lt;/p>
+&lt;figure>&lt;img src="tomb-painter-logo.png"/>
+&lt;/figure>
+&lt;p>It&amp;rsquo;s called Tomb Painter and I&amp;rsquo;ve been working on it since August of 2017.&lt;/p>
+&lt;figure>&lt;img src="characters.png"/>
+&lt;/figure>
+&lt;p>In the game, a painter arrives on mysterious island, which has strange things going on with it. Blob-shaped monsters made of paint start to appear from an ancient tomb. The only way to stop this is to paint beautiful patterns which were washed away by a flood that happened some time ago.&lt;/p>
+&lt;p>The main mechanic is that you can draw on floors and paint stuff by hitting it with your brush. By painting on the floor, you solve different puzzles.&lt;/p>
+&lt;figure>&lt;img src="gameplay.gif"/>
+&lt;/figure>
+&lt;div>
+&lt;h2>Table Of Contents&lt;/h2>
+&lt;nav id="TableOfContents">
+&lt;ul>
+&lt;li>&lt;a href="#start-of-development">Start of development&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#game--engine-separation">Game / engine separation&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#cmake--fetchcontent--third-party-dependencies">CMake / FetchContent / Third party dependencies&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#cutscene-system">Cutscene system&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#quest-and-saving-system">Quest and saving system&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#replay-system">Replay system&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#data--script-separation">Data / script separation&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#other">Other&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#whats-next">What&amp;rsquo;s next?&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/nav>
+&lt;/div>
+&lt;h2 id="start-of-development">Start of development&lt;/h2>
+&lt;p>I&amp;rsquo;ve started to work on this game, because developing &lt;a href="https://eliasdaler.github.io/re-creation/">Re:creation&lt;/a> became too hard for me. It had gigantic scope and pretty detailed art, which took a long time to produce, so I&amp;rsquo;ve decided to make something simpler as my first game.&lt;/p>
+&lt;p>It all started with this prototype art, which was highly inspired by &lt;a href="http://minitgame.com/">Minit&lt;/a>:&lt;/p>
+&lt;figure>&lt;img src="tomb-painter-first-prototype.png"/>
+&lt;/figure>
+&lt;p>I was pretty surprised that so much can be accomplished with only two colors, but I wanted a bit more detail, so I&amp;rsquo;ve decided to use 4 colors, just like Game Boy did:&lt;/p>
+&lt;figure>&lt;img src="tomb-painter-early.png"/>
+&lt;/figure>
+&lt;figure>&lt;img src="early-gameplay.gif"/>
+&lt;/figure>
+&lt;p>The game&amp;rsquo;s internal resolution is 160x144 pixels, same as Game Boy again. I&amp;rsquo;ve decided not to follow all limitations of Game Boy, as it would be pretty hard to make a good looking game with them, but still, 4 colors and 160x144 is pretty limiting, while it can also look good. It also takes a lot less time to produce art.&lt;/p>
+&lt;p>I&amp;rsquo;ve also experimented with adding a second palette (just like Super Game Boy on SNES did) and it looked pretty interesting:&lt;/p>
+&lt;figure>&lt;img src="early-gameplay2.gif"/>
+&lt;/figure>
+&lt;p>You can also see first painting system which was improved later.&lt;/p>
+&lt;p>So now I have two palettes with 4 colors each. The game is rendered in shades of grey and I can easily map each shade to whatever color I want to get different palettes, including the original Game Boy one:&lt;/p>
+&lt;figure>&lt;img src="gameboy.png"/>
+&lt;/figure>
+&lt;p>I also made some simple shaders for fade in and fade out:&lt;/p>
+&lt;figure>&lt;img src="fadein-fadeout.gif"/>
+&lt;/figure>
+&lt;p>and for lighting simulation:&lt;/p>
+&lt;figure>&lt;img src="light.gif"/>
+&lt;/figure>
+&lt;p>It&amp;rsquo;s still 4 colors, but it looks pretty nice.&lt;/p>
+&lt;p>A lot of time was spent on making paint look and feel good. Note that the tiles of paint change depending on direction you&amp;rsquo;re painting in, so it looks like a continuous trail, and you can also have multiples layer of paint. The paint also changes the color of what&amp;rsquo;s below it and that was pretty interesting to implement too. I may write about all that shader magic in the future.&lt;/p>
+&lt;figure>&lt;img src="painting.gif"/>
+&lt;/figure>
+&lt;p>As for more technical details: I&amp;rsquo;ve used Re:creation&amp;rsquo;s engine and started to modify it as I needed. I had working prototype of Tomb Painter in two weeks and it felt good to not start from scratch. All the abstractions and worries about design were worth it!&lt;/p>
+&lt;p>I&amp;rsquo;ve improved the engine quite a lot and if I start to go over it all in detail, so I&amp;rsquo;ll make a short summary here, and if you want to have it explained in depth, ask about stuff you want to be covered in comments!&lt;/p>
+&lt;h2 id="game--engine-separation">Game / engine separation&lt;/h2>
+&lt;p>Right now I&amp;rsquo;m still working on better game / engine separation, but basically the engine is now a statically linked library. I&amp;rsquo;ve decided to call the engine &lt;strong>EDGE&lt;/strong> (Elias Daler&amp;rsquo;s Game Engine). The &amp;ldquo;game&amp;rdquo; part is just several .cpp files and mostly just Lua code, because I prefer to code game logic in it. Once I feel that engine is decoupled enough and I have some time to make a simple game with it, I plan to open source the engine part!&lt;/p>
+&lt;h2 id="cmake--fetchcontent--third-party-dependencies">CMake / FetchContent / Third party dependencies&lt;/h2>
+&lt;p>I&amp;rsquo;ve learned a lot about CMake (thanks to &lt;a href="https://crascit.com/professional-cmake/">Professional CMake book&lt;/a>) and finally achieved a perfect setup for me. I&amp;rsquo;ve managed to get all third party dependencies (9 of them) to be fetched at configure time. Then, I build all the dependencies and my game. It works perfectly - it&amp;rsquo;s easy to start with a clean folder and just build everything!
+It&amp;rsquo;s also very easy to update to new versions of the libraries, here&amp;rsquo;s the only thing I need to do:&lt;/p>
+&lt;figure>&lt;img src="changing-lib-versions.png"/>
+&lt;/figure>
+&lt;h2 id="cutscene-system">Cutscene system&lt;/h2>
+&lt;p>I&amp;rsquo;ve written an article about how I write cutscenes with coroutines &lt;a href="https://eliasdaler.github.io/how-to-implement-action-sequences-and-cutscenes/">here&lt;/a>. It&amp;rsquo;s pretty great! A lot of code was simplified and now I can easily write complex action sequences, multi-branch cutscenes and dialogue trees with it. So, with the code like this:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-lua" data-lang="lua">&lt;span style="font-weight:bold">local&lt;/span> answer &lt;span style="font-weight:bold">=&lt;/span> girl:say(&lt;span style="color:#b84">&amp;#39;do_you_love_lua&amp;#39;&lt;/span>,
+{ &lt;span style="color:#b84">&amp;#39;YES&amp;#39;&lt;/span>, &lt;span style="color:#b84">&amp;#39;NO&amp;#39;&lt;/span> })
+&lt;span style="font-weight:bold">if&lt;/span> answer &lt;span style="font-weight:bold">==&lt;/span> &lt;span style="color:#b84">&amp;#39;YES&amp;#39;&lt;/span> &lt;span style="font-weight:bold">then&lt;/span>
+girl:setMood(&lt;span style="color:#b84">&amp;#39;happy&amp;#39;&lt;/span>)
+girl:say(&lt;span style="color:#b84">&amp;#39;happy_response&amp;#39;&lt;/span>)
+&lt;span style="font-weight:bold">else&lt;/span>
+girl:setMood(&lt;span style="color:#b84">&amp;#39;angry&amp;#39;&lt;/span>)
+girl:say(&lt;span style="color:#b84">&amp;#39;angry_response&amp;#39;&lt;/span>)
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>I get this:&lt;/p>
+&lt;figure>&lt;img src="dialogue.gif"/>
+&lt;/figure>
+&lt;h2 id="quest-and-saving-system">Quest and saving system&lt;/h2>
+&lt;p>It&amp;rsquo;s now possible to have a main quest line in the game, but also side quests with multiple states which are easy to write, modify and read.&lt;/p>
+&lt;p>Previously, Re:creation had a very simple save system which saved your inventory, main quest progression, etc. But I&amp;rsquo;ve decided that I needed something more complex for Tomb Painter, to store consequences of NPC interactions or side quest progression. The current system tracks game&amp;rsquo;s state in real time and saves all important stuff in a Lua table once it happens (by catching events). Then, when you save, this table is just converted to JSON and saved to a file. Pretty awesome!&lt;/p>
+&lt;h2 id="replay-system">Replay system&lt;/h2>
+&lt;p>I&amp;rsquo;ve also implemented a replay system which lets me record all input and then replay it in any speed I want. I can record minutes of gameplay and then run it very fast! I can also use it to quickly repeat some tasks (e.g. kill two enemies than go to room X) and then continue playing the game. Here&amp;rsquo;s how all this looks in action:&lt;/p>
+&lt;figure>&lt;img src="replay.gif"/>
+&lt;/figure>
+&lt;h2 id="data--script-separation">Data / script separation&lt;/h2>
+&lt;p>Previously, I&amp;rsquo;ve stored all information about prefabs in Lua scripts. But then I&amp;rsquo;ve decided that they&amp;rsquo;d look better in JSON and it&amp;rsquo;ll be much easier to write a GUI tool for modifying prefabs in the future. Here&amp;rsquo;s an example of how prefab looks:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">&lt;span style="color:#b84">&amp;#34;slime&amp;#34;&lt;/span> &lt;span style="color:#a61717;background-color:#e3d2d2">:&lt;/span> {
+&lt;span style="color:#000080">&amp;#34;ai&amp;#34;&lt;/span> : {
+&lt;span style="color:#000080">&amp;#34;type&amp;#34;&lt;/span> : &lt;span style="color:#b84">&amp;#34;chaser&amp;#34;&lt;/span>,
+&lt;span style="color:#000080">&amp;#34;viewRadius&amp;#34;&lt;/span> : &lt;span style="color:#099">60&lt;/span>,
+&lt;span style="color:#000080">&amp;#34;viewAngle&amp;#34;&lt;/span> : &lt;span style="color:#099">90&lt;/span>
+},
+&lt;span style="color:#000080">&amp;#34;animation&amp;#34;&lt;/span> : { },
+&lt;span style="color:#000080">&amp;#34;collision&amp;#34;&lt;/span> : { &lt;span style="color:#000080">&amp;#34;boundingBox&amp;#34;&lt;/span> : [ &lt;span style="color:#099">6&lt;/span>, &lt;span style="color:#099">4&lt;/span> ] },
+&lt;span style="color:#000080">&amp;#34;damage&amp;#34;&lt;/span> : {
+&lt;span style="color:#000080">&amp;#34;amount&amp;#34;&lt;/span> : &lt;span style="color:#099">1&lt;/span>,
+&lt;span style="color:#000080">&amp;#34;type&amp;#34;&lt;/span> : &lt;span style="color:#b84">&amp;#34;physical&amp;#34;&lt;/span>
+},
+&lt;span style="color:#000080">&amp;#34;graphics&amp;#34;&lt;/span> : {
+&lt;span style="color:#000080">&amp;#34;spriteOrigin&amp;#34;&lt;/span> : [ &lt;span style="color:#099">8&lt;/span>, &lt;span style="color:#099">10&lt;/span> ],
+&lt;span style="color:#000080">&amp;#34;overlays&amp;#34;&lt;/span> : {
+&lt;span style="color:#000080">&amp;#34;paint&amp;#34;&lt;/span> : &lt;span style="color:#b84">&amp;#34;slime_overlay&amp;#34;&lt;/span>
+}
+},
+&lt;span style="color:#000080">&amp;#34;health&amp;#34;&lt;/span> : { &lt;span style="color:#000080">&amp;#34;maxHealth&amp;#34;&lt;/span> : &lt;span style="color:#099">2&lt;/span> },
+&lt;span style="color:#000080">&amp;#34;movement&amp;#34;&lt;/span> : {
+&lt;span style="color:#000080">&amp;#34;moveSpeed&amp;#34;&lt;/span> : [ &lt;span style="color:#099">15.0&lt;/span>, &lt;span style="color:#099">15.0&lt;/span> ],
+&lt;span style="color:#000080">&amp;#34;mass&amp;#34;&lt;/span> : &lt;span style="color:#099">0.5&lt;/span>
+},
+&lt;span style="color:#000080">&amp;#34;sound&amp;#34;&lt;/span> : {
+&lt;span style="color:#000080">&amp;#34;sounds&amp;#34;&lt;/span> : {
+&lt;span style="color:#000080">&amp;#34;hit&amp;#34;&lt;/span> : { &lt;span style="color:#000080">&amp;#34;file&amp;#34;&lt;/span> : &lt;span style="color:#b84">&amp;#34;enemy_hit&amp;#34;&lt;/span> },
+&lt;span style="color:#000080">&amp;#34;die&amp;#34;&lt;/span> : { &lt;span style="color:#000080">&amp;#34;file&amp;#34;&lt;/span> : &lt;span style="color:#b84">&amp;#34;enemy_die&amp;#34;&lt;/span> }
+}
+},
+&lt;span style="color:#000080">&amp;#34;stateMachine&amp;#34;&lt;/span> : {
+&lt;span style="color:#000080">&amp;#34;main&amp;#34;&lt;/span> : {
+&lt;span style="color:#000080">&amp;#34;initialState&amp;#34;&lt;/span> : &lt;span style="color:#b84">&amp;#34;IdleState&amp;#34;&lt;/span>,
+&lt;span style="color:#000080">&amp;#34;transitionTable&amp;#34;&lt;/span> : &lt;span style="color:#b84">&amp;#34;hero&amp;#34;&lt;/span>
+},
+&lt;span style="color:#000080">&amp;#34;ai&amp;#34;&lt;/span> : {
+&lt;span style="color:#000080">&amp;#34;initialState&amp;#34;&lt;/span> : &lt;span style="color:#b84">&amp;#34;AIPatrolState&amp;#34;&lt;/span>,
+&lt;span style="color:#000080">&amp;#34;transitionTable&amp;#34;&lt;/span> : &lt;span style="color:#b84">&amp;#34;ai_slime&amp;#34;&lt;/span>
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>As you can see, it&amp;rsquo;s easy to read. Transition tables are still written in Lua, because they usually have conditions inside of them and they look like this:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-lua" data-lang="lua">{
+IdleState &lt;span style="font-weight:bold">=&lt;/span> {
+update &lt;span style="font-weight:bold">=&lt;/span> &lt;span style="font-weight:bold">function&lt;/span>(entity)
+&lt;span style="font-weight:bold">if&lt;/span> &lt;span style="font-weight:bold">not&lt;/span> entity:getVelocity():isZero() &lt;span style="font-weight:bold">then&lt;/span>
+&lt;span style="font-weight:bold">return&lt;/span> &lt;span style="color:#b84">&amp;#34;MoveState&amp;#34;&lt;/span>
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;span style="font-weight:bold">end&lt;/span>
+},
+MoveState &lt;span style="font-weight:bold">=&lt;/span> {
+update &lt;span style="font-weight:bold">=&lt;/span> &lt;span style="font-weight:bold">function&lt;/span>(entity)
+&lt;span style="font-weight:bold">if&lt;/span> entity:getVelocity():isZero() &lt;span style="font-weight:bold">then&lt;/span>
+&lt;span style="font-weight:bold">return&lt;/span> &lt;span style="color:#b84">&amp;#34;IdleState&amp;#34;&lt;/span>
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;span style="font-weight:bold">end&lt;/span>
+},
+DyingState &lt;span style="font-weight:bold">=&lt;/span> {
+[EventType.AnimationFinished] &lt;span style="font-weight:bold">=&lt;/span> {
+callback &lt;span style="font-weight:bold">=&lt;/span> &lt;span style="font-weight:bold">function&lt;/span>(entity, event)
+&lt;span style="font-weight:bold">if&lt;/span> event.data.animationName &lt;span style="font-weight:bold">==&lt;/span> &lt;span style="color:#b84">&amp;#34;dying&amp;#34;&lt;/span> &lt;span style="font-weight:bold">then&lt;/span>
+&lt;span style="font-weight:bold">return&lt;/span> &lt;span style="color:#b84">&amp;#34;DiedState&amp;#34;&lt;/span>
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;span style="font-weight:bold">end&lt;/span>
+}
+},
+...
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Update fuction can either call &lt;code>setState&lt;/code> explicitly, or just return a name of the state to transition into. Another way to transition is by catching the event. So, if entity is in &lt;code>DyingState&lt;/code> and it catches &lt;code>AnimationFinished&lt;/code> event, the callback is called where it can then transition into another state.&lt;/p>
+&lt;h2 id="other">Other&lt;/h2>
+&lt;p>All GUI widgets are now entities, which is very useful as they can be manipulated as normal game objects and I don&amp;rsquo;t have any repeating rendering/movement code.&lt;/p>
+&lt;p>Also, I&amp;rsquo;ve worked a lot on resource and entity prefab management. Now, entity prefabs are ref counted and if entity prefab is unused on another level, it&amp;rsquo;s unloaded with all resources which it was using (unless other prefabs use it too). The system is very complex to explain in a few paragraphs and I might write an article about it later.&lt;/p>
+&lt;p>And there was a lot of refactoring, of course. All the code is now in its best condition ever.&lt;/p>
+&lt;h2 id="whats-next">What&amp;rsquo;s next?&lt;/h2>
+&lt;figure>&lt;img src="shadows.png"/>
+&lt;/figure>
+&lt;p>Right now, my next goal is making game look even prettier shadows (see the screenshot above), animated tiles, a new level, the first boss and the first awesome mini-game. Overall, the progress looks very good and I&amp;rsquo;m very happy with my engine and I can&amp;rsquo;t wait to start working on the game again. I&amp;rsquo;ll also have a lot more time to work on the game (find out why in the next post!), so it&amp;rsquo;s going to be awesome.&lt;/p>
+&lt;p>See you soon! Thanks for reading.&lt;/p></description></item><item><title>How to implement action sequences and cutscenes</title><link>https://eliasdaler.github.io/hugo-test/posts/how-to-implement-action-sequences-and-cutscenes/</link><pubDate>Wed, 03 Oct 2018 21:00:00 +0300</pubDate><guid>https://eliasdaler.github.io/hugo-test/posts/how-to-implement-action-sequences-and-cutscenes/</guid><description>&lt;h2 id="introduction">Introduction&lt;/h2>
 &lt;p>&lt;a href="https://habr.com/post/427135/">Russian translation&lt;/a>&lt;/p>
 &lt;p>This post will show ways of implementing actions sequences and cutscenes in video games. The code is written in Lua, but the patterns can be implemented with other languages (except the coroutine approach, because not all languages have coroutines).&lt;/p>
 &lt;p>Action sequences frequently appear in games. In cutscenes, for example: a character approaches an enemy, says something, the enemy responds and so on. But action sequences often appear in gameplay as well. Take a look at this gif for example:&lt;/p>
