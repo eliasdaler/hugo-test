@@ -291,10 +291,9 @@ footer#footer {
 }
 
 blockquote.hint-info {
-    border-left-color: #66bbff !important;
-    background-color: #66bbff60;
+    background-color: #f9f9f9;
+    color: #797979;
 }
-
 
 blockquote.hint-warning {
     border-left-color: #ffdd66 !important;
