@@ -1,4 +1,243 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on Elias Daler's blog</title><link>https://eliasdaler.github.io/hugo-test/posts/</link><description>Recent content in Posts on Elias Daler's blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Tue, 15 Oct 2019 00:00:00 +0300</lastBuildDate><atom:link href="https://eliasdaler.github.io/hugo-test/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>LuaVela - the LuaJIT fork I've worked on</title><link>https://eliasdaler.github.io/hugo-test/posts/luavela/</link><pubDate>Tue, 15 Oct 2019 00:00:00 +0300</pubDate><guid>https://eliasdaler.github.io/hugo-test/posts/luavela/</guid><description>&lt;p>Recently, IPONWEB open sourced its fork of LuaJIT called
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on Elias Daler's blog</title><link>https://eliasdaler.github.io/hugo-test/posts/</link><description>Recent content in Posts on Elias Daler's blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Sun, 17 May 2020 00:00:00 +0300</lastBuildDate><atom:link href="https://eliasdaler.github.io/hugo-test/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>Porting my engine from SFML to SDL</title><link>https://eliasdaler.github.io/hugo-test/posts/porting-to-sdl/</link><pubDate>Sun, 17 May 2020 00:00:00 +0300</pubDate><guid>https://eliasdaler.github.io/hugo-test/posts/porting-to-sdl/</guid><description>&lt;p>Recently I&amp;rsquo;ve ported my game/engine from SFML to SDL. This was not an easy task
+and took me two weeks of hard work (3-4 hours on weekdays, 6-8 hours on
+weekends). This article will explain why I did it and which challenges I&amp;rsquo;ve
+faced in the process.&lt;/p>
+&lt;figure>&lt;img src="title-image.png"/>
+&lt;/figure>
+&lt;div>
+&lt;h2>Table Of Contents&lt;/h2>
+&lt;nav id="TableOfContents">
+&lt;ul>
+&lt;li>&lt;a href="#intro">Intro&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#why-port-my-game-to-sdl">Why port my game to SDL?&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#porting-to-sdl---the-process">Porting to SDL - the process&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#results">Results&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/nav>
+&lt;/div>
+&lt;h2 id="intro">Intro&lt;/h2>
+&lt;figure>&lt;img src="first-game.png"
+alt="My first SFML project"/>&lt;figcaption>
+&lt;p>My first SFML project&lt;/p>
+&lt;/figcaption>
+&lt;/figure>
+&lt;p>SFML has played a huge part in my life. I&amp;rsquo;ve started using it 8 years ago (in
+2012) and it was then when things finally clicked for me in game programming.&lt;/p>
+&lt;figure>&lt;img src="re-creation.gif"
+alt="My second SFML project"/>&lt;figcaption>
+&lt;p>My second SFML project&lt;/p>
+&lt;/figcaption>
+&lt;/figure>
+&lt;p>SFML is a perfect library for a beginner. In one framework you have pretty much everything
+to make a simple 2D game: window creation, 2D graphics helpers, TTF rendering,
+audio, input, networking and so on. In a few lines of code you can get your
+simple prototype running, compared to SDL or GLFW, where you need to do much
+more (it was especially true before &lt;code>SDL_Renderer&lt;/code> became better and didn&amp;rsquo;t have
+accelerated graphics support). If you&amp;rsquo;re not planning to make a huge game, but
+still don&amp;rsquo;t want to use an engine, SFML is a solid choice. &lt;a href="https://www.youtube.com/playlist?list=PLB_ibvUSN7mzUffhiay5g5GUHyJRO4DYr">These
+videos&lt;/a> show
+how powerful SFML can be and how fast you can iterate with it.&lt;/p>
+&lt;h2 id="why-port-my-game-to-sdl">Why port my game to SDL?&lt;/h2>
+&lt;p>My main reason for porting to SDL was my engine&amp;rsquo;s preservation and future. SDL
+is a very stable framework and is &lt;a href="https://en.wikipedia.org/wiki/List_of_games_using_SDL">widely
+used&lt;/a> and supported
+(especially by Valve - it&amp;rsquo;s basically integrated into Steam at this point and
+been used as a main tool for porting many games to Linux).&lt;/p>
+&lt;p>As I developed my games and engine for yet another year, I&amp;rsquo;ve realized that my
+engine will be with me for a really long time. At the same time, OSes don&amp;rsquo;t
+stand still - they sometimes change their APIs (macOS especially loves to do
+this), they introduce new bugs and incompatibilities. SFML was pretty
+up-to-date in the 2012-2017, but then I&amp;rsquo;ve felt that it just couldn&amp;rsquo;t keep up
+with rapidly changing environment. It still supported very old joysticks, for
+example, but had some bugs popping up on macOS and its mobile phone support was
+not supported well.&lt;/p>
+&lt;p>SDL is a widely used framework and it&amp;rsquo;s a very nice thing - the bugs are
+reported faster and get resolved quicker. When you have a lot of games running
+on a framework, you don&amp;rsquo;t want to see it being broken - and so you tend to put
+more effort into its support and preservation. This is not the same for SFML -
+there are only a couple of commercial games made with it, and most of them are
+not made by AAA or even AA studios.&lt;/p>
+&lt;p>Another issue with SFML is a crawling speed of its development. There are &lt;a href="https://en.sfml-dev.org/forums/index.php?board=2.0">a
+lot&lt;/a> of
+long-awaited features and bugs to be fixed. This is a direct result of what I&amp;rsquo;ve
+talked in the paragraph above - SFML is mostly a hobbyist library, so there&amp;rsquo;s
+not a lot of developers working on it. Even one full-time developer would have
+made a world of difference, but SFML doesn&amp;rsquo;t have them.&lt;/p>
+&lt;p>One example of this is scancodes - I&amp;rsquo;ve provided &lt;a href="https://github.com/SFML/SFML/pull/1400">a PR for Linux
+implementation&lt;/a>
+two years ago. And even though the code was accepted, the implementation is not
+merged into master, because other implementations are still not complete or buggy.&lt;/p>
+&lt;p>There&amp;rsquo;s also a lot of conservatism from some people on SFML team - it&amp;rsquo;s mostly
+justifiable, given that there&amp;rsquo;s not enough developer time to support all the
+extra features and APIs, but at the same time it feels like you don&amp;rsquo;t have
+enough things that could easily be added and be very useful.&lt;/p>
+&lt;p>There&amp;rsquo;s also an &amp;ldquo;SFML 3&amp;rdquo; discussion floating around, which is about dropping
+C++03 support in SFML and finally starting to use C++11 (and later) features and
+making SFML&amp;rsquo;s API easier and safer to use, and dropping support for a lot of
+things at the same time (e.g. the abstraction on threads can be removed, because
+we have std::thread now). The discussion has been going around for years, but
+there is still no clear sign of when such thing will be finally developed.&lt;/p>
+&lt;p>You get the idea. SFML could be much greater than it is now, but basically
+nothing has happened with it in the past 5 years, except for implementing some
+features which SDL had for a long time.&lt;/p>
+&lt;blockquote class="hint-info">
+&lt;strong>Update (2022)&lt;/strong>: &lt;a href="https://vittorioromeo.info/">Vittorio Romeo&lt;/a> has been doing a lot of SFML modernization lately. So it&amp;rsquo;s not as grim as it seemed back then.
+&lt;/blockquote>
+&lt;p>I can go on, but here&amp;rsquo;s a summarization of all the things which made me choose
+SDL over SFML:&lt;/p>
+&lt;ul>
+&lt;li>SDL has commercial support, which results in bugs being found and resolved
+quicker&lt;/li>
+&lt;li>SDL has better portability&lt;/li>
+&lt;li>SDL deals with a lot of OS quirks (down to update versions for Windows, for
+example)&lt;/li>
+&lt;li>SFML will probably not get features which will make it superior for modern C++
+development soon, so at this point using a C library is as good as using C++03
+library for me.&lt;/li>
+&lt;li>SDL has better gamepad support (thanks to its huge &lt;a href="https://github.com/gabomdq/SDL_GameControllerDB">controller
+DB&lt;/a>).&lt;/li>
+&lt;li>SDL handles multi-display setups better&lt;/li>
+&lt;li>SDL has various features not present in SFML (IO streams abstraction, message
+box abstraction, and so on)&lt;/li>
+&lt;/ul>
+&lt;h2 id="porting-to-sdl---the-process">Porting to SDL - the process&lt;/h2>
+&lt;p>The porting process was very daunting at first - even though I&amp;rsquo;ve tried to keep
+my SFML-related code separate, parts of it still leaked into higher level
+things. I&amp;rsquo;ve also used a lot of graphical features of SFML, which SDL doesn&amp;rsquo;t
+have in its &lt;code>SDL_Renderer&lt;/code> module to this day or which have entirely different
+API from SFML&amp;rsquo;s.&lt;/p>
+&lt;p>One thing that helped me moving quicker is realization that I can replace SFML
+code with SDL code without breaking SFML part. Imagine if I just chose to not
+link to SFML and start to rewrite all the things module by module - it would
+take a lot of time to even get the thing to compile, getting it to run properly
+would be even harder.&lt;/p>
+&lt;p>I&amp;rsquo;ve decided to not use &lt;code>SDL_Renderer&lt;/code> or &lt;code>SDL_gpu&lt;/code> for rendering, because I&amp;rsquo;ve
+realized that the porting would be much easier if I could write my own similar
+classes for sprites, render textures and other stuff, so that its behaviour is
+similar to SFML&amp;rsquo;s graphical primitives. I&amp;rsquo;ve chosen to write the whole graphics
+part in OpenGL.&lt;/p>
+&lt;figure>&lt;img src="imgui.png"
+alt="Getting Dear ImGui to work with SDL/OpenGL was encouranging"/>&lt;figcaption>
+&lt;p>Getting Dear ImGui to work with SDL/OpenGL was encouranging&lt;/p>
+&lt;/figcaption>
+&lt;/figure>
+&lt;p>Before that, the only thing I knew about OpenGL is how to draw a triangle with
+it, so it was additional challenge for me, but one that I took with a great
+interest, because I wanted to properly learn modern OpenGL for a long time.&lt;/p>
+&lt;p>However, this presented new problems - SFML uses legacy OpenGL (its immediate
+mode with &lt;code>glBegin&lt;/code> and &lt;code>glEnd&lt;/code> everywhere), so I couldn&amp;rsquo;t just follow SFML&amp;rsquo;s
+implementation to get my own version of its graphics API. I&amp;rsquo;m still glad that I
+used so many parts of SFML&amp;rsquo;s graphics module, though, because a lot of OpenGL
+concepts like vertex buffers (&lt;code>sf::VertexBuffer&lt;/code>), frame buffers
+(&lt;code>sf::RenderTexture&lt;/code>), shaders (&lt;code>sf::Shader&lt;/code>), viewport matrix (&lt;code>sf::View&lt;/code>) and
+other things had abstractions in SFML, so I understood the concepts well.&lt;/p>
+&lt;p>A lot of tutorials helped me get used to OpenGL. Here are some of them:&lt;/p>
+&lt;ul>
+&lt;li>&lt;a href="https://learnopengl.com">learnopengl.com&lt;/a>, Joey de Vries tutorials&lt;/li>
+&lt;li>&lt;a href="https://www.tomdalling.com/blog/category/modern-opengl/">Tom Dalling&amp;rsquo;s modern OpenGL
+tutorials&lt;/a>&lt;/li>
+&lt;li>&lt;a href="http://duriansoftware.com/joe/An-intro-to-modern-OpenGL.-Table-of-Contents.html">Joe Groff&amp;rsquo;s OpenGL
+articles&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;p>For the math library, I&amp;rsquo;ve chosen &lt;a href="https://glm.g-truc.net/">glm&lt;/a>, which proved to be amazing and helped
+me out with a lot of math stuff (especially matrices and transforms). I&amp;rsquo;ve
+eventually replaced my own vector class with &lt;code>glm::vec2&lt;/code>/&lt;code>glm::ivec2&lt;/code> and
+now it&amp;rsquo;s used consistently through the whole codebase (with SFML I had to
+convert to &lt;code>sf::Vector2&amp;lt;T&amp;gt;&lt;/code> back and forth, which was annoying).&lt;/p>
+&lt;p>The only huge problem I had with &lt;code>glm&lt;/code> is that it didn&amp;rsquo;t initialize its vectors
+and matrices to zero by default. It wasn&amp;rsquo;t noticeable at first, but then I&amp;rsquo;ve
+spent a few hours debugging some sprites being missing from time to time&amp;hellip;
+turns out it was caused by uninitialized &lt;code>glm::vec2&lt;/code>. I turned on
+&lt;code>GLM_FORCE_CTOR_INIT&lt;/code> and never looked back (I still try to initialize vectors
+explicitly, but sometimes you just forget to do it!).&lt;/p>
+&lt;p>As the result, I now have a bunch of classes closely following SFML&amp;rsquo;s API, but I
+could finally change the API to my liking and not implement all the things that
+I didn&amp;rsquo;t like or didn&amp;rsquo;t use.&lt;/p>
+&lt;p>There was another problem - SFML screwed with OpenGL context even if I wasn&amp;rsquo;t
+rendering anything with SFML&amp;rsquo;s graphics API. For example, creating an instance of
+&lt;code>sf::RenderTexture&lt;/code> caused graphical errors and crashes. I didn&amp;rsquo;t even need to
+call &lt;code>sf::RenderTexture::create&lt;/code> for it to happen! But other than that, creating
+SFML objects along my own graphics objects didn&amp;rsquo;t cause any problems, so
+good-ol' &lt;code>ifdef&lt;/code>&amp;rsquo;s came to the rescue:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp">&lt;span style="font-weight:bold">class&lt;/span> &lt;span style="color:#458;font-weight:bold">GraphicsComponent&lt;/span> &lt;span style="font-weight:bold">:&lt;/span> ... {
+...
+sf&lt;span style="font-weight:bold">::&lt;/span>Sprite sprite;
+edge&lt;span style="font-weight:bold">::&lt;/span>Sprite sprite2; &lt;span style="color:#998;font-style:italic">// my verision of sprite
+&lt;/span>&lt;span style="color:#998;font-style:italic">&lt;/span>};
+&lt;span style="color:#998;font-style:italic">// somewhere in the rendering system
+&lt;/span>&lt;span style="color:#998;font-style:italic">&lt;/span>&lt;span style="color:#999;font-weight:bold">#ifdef USE_SFML
+&lt;/span>&lt;span style="color:#999;font-weight:bold">&lt;/span> window.draw(gc.sprite);
+&lt;span style="color:#999;font-weight:bold">#else
+&lt;/span>&lt;span style="color:#999;font-weight:bold">&lt;/span> window_sdl.draw(gc.sprite2);
+&lt;span style="color:#999;font-weight:bold">#endif
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Why &lt;code>sprite&lt;/code> and &lt;code>sprite2&lt;/code>, you might ask? Because If I had written something
+like this:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp">&lt;span style="font-weight:bold">class&lt;/span> &lt;span style="color:#458;font-weight:bold">GraphicsComponent&lt;/span> &lt;span style="font-weight:bold">:&lt;/span> ... {
+...
+&lt;span style="color:#999;font-weight:bold">#ifdef USE_SFML
+&lt;/span>&lt;span style="color:#999;font-weight:bold">&lt;/span> sf&lt;span style="font-weight:bold">::&lt;/span>Sprite sprite;
+&lt;span style="color:#999;font-weight:bold">#else
+&lt;/span>&lt;span style="color:#999;font-weight:bold">&lt;/span> Sprite sprite;
+&lt;span style="color:#999;font-weight:bold">#endif
+&lt;/span>&lt;span style="color:#999;font-weight:bold">&lt;/span>};
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&amp;hellip; then I&amp;rsquo;d get a lot of compiler errors in all the systems which used &lt;code>sprite&lt;/code>
+in any way, but I chose a more iterative approach - I didn&amp;rsquo;t allow some
+systems/functions to run in SDL mode and got them working properly one by one.&lt;/p>
+&lt;p>Another thing that really saved me was making a small project with my engine
+before the porting began. This way, it was easier to get things working
+iteratively without breaking my main big project. Once I could get all the
+graphical things working one by one in this small environments, I could finally
+move on to making my game work correctly.&lt;/p>
+&lt;p>Porting input was easy - I&amp;rsquo;m using an abstraction on keyboards and gamepads:
+when you press &amp;ldquo;Z&amp;rdquo; on the keyboard or &amp;ldquo;A&amp;rdquo; on the gamepad, the &amp;ldquo;PrimaryAction&amp;rdquo;
+event gets sent and the game logic handles it, instead of checking for
+keyboard/gamepad state manually. Therefore, all I had to do was to replace the
+code which handled framework&amp;rsquo;s events (&lt;code>sf::Event&lt;/code> to &lt;code>SDL_event&lt;/code>), and it was
+all done - no changes to game input logic.&lt;/p>
+&lt;p>At this point, my game was up and running. Even if it didn&amp;rsquo;t have proper shaders
+and had some graphical issues, it was fully playable, which was really
+satisfying, because it proved to me that my game logic was independent from the
+framework it was running on (I didn&amp;rsquo;t need to change a thing in game logic, in
+part because I didn&amp;rsquo;t export any SFML classes to Lua, so I only had to change
+implementation of some C++/Lua bindings like &lt;code>setSpriteColor&lt;/code> or &lt;code>setTexture&lt;/code>)&lt;/p>
+&lt;figure>&lt;img src="tomb-painter-1.png"
+alt="Tomb Painter running Tomb Painter running for the first time on SDL. Some animations were broken, no palette or lighting shaders, but it’s playable!"/>&lt;figcaption>
+&lt;p>Tomb Painter running Tomb Painter running for the first time on SDL. Some animations were broken, no palette or lighting shaders, but it’s playable!&lt;/p>
+&lt;/figcaption>
+&lt;/figure>
+&lt;p>The audio proved to be a lot more trickier - I&amp;rsquo;ve initially just commented out
+all audio code until I was done with everything else, but once I needed to port
+my audio code I&amp;rsquo;ve decided to implement some simple Sound and Music class
+similar to SFML&amp;rsquo;s using OpenAL-soft - and &lt;a href="https://indiegamedev.net/2020/02/15/the-complete-guide-to-openal-with-c-part-1-playing-a-sound/">these
+tutorials&lt;/a>
+really helped me out with it.&lt;/p>
+&lt;p>Porting level editor was not easy. There were absolutely no problems with Dear
+ImGui running on SDL instead of SFML - not much has changed in UI code, except
+for me having to make some wrappers around my &lt;code>Sprite&lt;/code> classes to get
+&lt;code>ImGui::Image&lt;/code> and &lt;code>ImGui::ImageButton&lt;/code> to work. However, I used a lot of SFML&amp;rsquo;s
+more complex features for implementing level editor camera and drawing debug
+info, so I had to spend a lot of time porting all of that to my own graphics system.&lt;/p>
+&lt;figure>&lt;img src="editor.png"
+alt="Level editor running"/>&lt;figcaption>
+&lt;p>Level editor running&lt;/p>
+&lt;/figcaption>
+&lt;/figure>
+&lt;h2 id="results">Results&lt;/h2>
+&lt;p>Here&amp;rsquo;s the result of my porting efforts:&lt;/p>
+&lt;figure>&lt;img src="commit.png"
+alt="The final commit in porting branch. Game &amp;#43; engine is ~40k loc in total, so I change quite a big percentage of it."/>&lt;figcaption>
+&lt;p>The final commit in porting branch. Game + engine is ~40k loc in total, so I change quite a big percentage of it.&lt;/p>
+&lt;/figcaption>
+&lt;/figure>
+&lt;p>10 days have passed since the porting was finished, and so far I didn&amp;rsquo;t notice
+any bugs caused by it. In fact, it was just yesterday that I remembered that I
+have ported my game at all to SDL. And it&amp;rsquo;s a good thing, which makes that the
+engine&amp;rsquo;s base is stronger than ever, but my main development process has not
+slowed down a bit.&lt;/p>
+&lt;p>SDL with modern OpenGL are pleasant to use, and now as I&amp;rsquo;m closer to low level, I can
+implement things that wouldn&amp;rsquo;t be as easy to do with just SFML. Let&amp;rsquo;s see where
+it leads me!&lt;/p>
+&lt;p>Thanks for reading!&lt;/p></description></item><item><title>LuaVela - the LuaJIT fork I've worked on</title><link>https://eliasdaler.github.io/hugo-test/posts/luavela/</link><pubDate>Tue, 15 Oct 2019 00:00:00 +0300</pubDate><guid>https://eliasdaler.github.io/hugo-test/posts/luavela/</guid><description>&lt;p>Recently, IPONWEB open sourced its fork of LuaJIT called
 &lt;a href="https://github.com/iponweb/luavela">LuaVela&lt;/a>. The original announcement post
 can be found &lt;a href="http://lua-users.org/lists/lua-l/2019-08/msg00041.html">here&lt;/a>
 where a lot of details about it can be found. For those who don&amp;rsquo;t know - my real
