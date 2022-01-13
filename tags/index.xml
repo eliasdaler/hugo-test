@@ -1,10 +1,368 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Tags on Elias Daler's blog</title><link>https://eliasdaler.github.io/hugo-test/tags/</link><description>Recent content in Tags on Elias Daler's blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Wed, 27 Sep 2017 22:00:00 +0300</lastBuildDate><atom:link href="https://eliasdaler.github.io/hugo-test/tags/index.xml" rel="self" type="application/rss+xml"/><item><title>My First Post</title><link>https://eliasdaler.github.io/hugo-test/posts/my-first-post/</link><pubDate>Wed, 12 Jan 2022 14:22:34 +0300</pubDate><guid>https://eliasdaler.github.io/hugo-test/posts/my-first-post/</guid><description>&lt;p>Hello world.&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="font-weight:bold">func&lt;/span> &lt;span style="color:#900;font-weight:bold">x&lt;/span>() {
-&lt;span style="font-weight:bold">if&lt;/span> x &lt;span style="font-weight:bold">==&lt;/span> &lt;span style="color:#099">5&lt;/span> {
-&lt;span style="font-weight:bold">return&lt;/span> &lt;span style="font-weight:bold">nil&lt;/span>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Tags on Elias Daler's blog</title><link>https://eliasdaler.github.io/hugo-test/tags/</link><description>Recent content in Tags on Elias Daler's blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Wed, 03 Oct 2018 21:00:00 +0300</lastBuildDate><atom:link href="https://eliasdaler.github.io/hugo-test/tags/index.xml" rel="self" type="application/rss+xml"/><item><title>How to implement action sequences and cutscenes</title><link>https://eliasdaler.github.io/hugo-test/posts/how-to-implement-action-sequences-and-cutscenes/</link><pubDate>Wed, 03 Oct 2018 21:00:00 +0300</pubDate><guid>https://eliasdaler.github.io/hugo-test/posts/how-to-implement-action-sequences-and-cutscenes/</guid><description>&lt;h2 id="introduction">Introduction&lt;/h2>
+&lt;p>&lt;a href="https://habr.com/post/427135/">Russian translation&lt;/a>&lt;/p>
+&lt;p>This post will show ways of implementing actions sequences and cutscenes in video games. The code is written in Lua, but the patterns can be implemented with other languages (except the coroutine approach, because not all languages have coroutines).&lt;/p>
+&lt;p>Action sequences frequently appear in games. In cutscenes, for example: a character approaches an enemy, says something, the enemy responds and so on. But action sequences often appear in gameplay as well. Take a look at this gif for example:&lt;/p>
+&lt;figure>&lt;img src="going-into-bar.gif"/>
+&lt;/figure>
+&lt;p>We see the following sequence of actions:&lt;/p>
+&lt;ol>
+&lt;li>The door is opened&lt;/li>
+&lt;li>The player goes inside the house&lt;/li>
+&lt;li>The door closes&lt;/li>
+&lt;li>The screen fades out&lt;/li>
+&lt;li>Level changes&lt;/li>
+&lt;li>The screen fades in&lt;/li>
+&lt;li>The player enters the building&lt;/li>
+&lt;/ol>
+&lt;p>Action sequences can be used when scripting NPC behavior and boss fights. For example, you can have a boss throw something at you, then laugh, then shook its fist in your direction. But implementing such things is not an easy task&amp;hellip;&lt;/p>
+&lt;div>
+&lt;h2>Table Of Contents&lt;/h2>
+&lt;nav id="TableOfContents">
+&lt;ul>
+&lt;li>&lt;a href="#introduction">Introduction&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#the-problem">The problem&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#booleans-enums-state-machines">Booleans, enums, state machines&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#action-lists">Action lists&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#coroutines">Coroutines&lt;/a>
+&lt;ul>
+&lt;li>&lt;a href="#coroutines-basics">Coroutines basics&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#implementing-cutscenes-with-coroutines">Implementing cutscenes with coroutines&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#advanced-usage">Advanced usage&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#pros-and-cons-of-coroutines">Pros and cons of coroutines&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;a href="#conclusion">Conclusion&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/nav>
+&lt;/div>
+&lt;h2 id="the-problem">The problem&lt;/h2>
+&lt;p>Unfortunately, standard game loop doesn&amp;rsquo;t make it easy for us. Suppose we have this game loop:&lt;/p>
+&lt;figure>&lt;img src="game-loop.png"/>
+&lt;/figure>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-lua" data-lang="lua">&lt;span style="font-weight:bold">while&lt;/span> game:isRunning() &lt;span style="font-weight:bold">do&lt;/span>
+processInput()
+dt &lt;span style="font-weight:bold">=&lt;/span> clock.delta()
+update(dt)
+render()
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now, suppose you want to implement the following cutscene: a player goes to an NPC, and the NPC says &amp;ldquo;You did it!&amp;rdquo;, and then after short delay it says &amp;ldquo;Thank you!&amp;rdquo;. In ideal world, we&amp;rsquo;d want to write it like this:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-lua" data-lang="lua">player:goTo(npc)
+npc:say(&lt;span style="color:#b84">&amp;#34;You did it!&amp;#34;&lt;/span>)
+delay(&lt;span style="color:#099">0.5&lt;/span>)
+npc:say(&lt;span style="color:#b84">&amp;#34;Thank you&amp;#34;&lt;/span>)
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>And that&amp;rsquo;s when we hit the first roadblock. All these actions take some time to complete. Some might even require user input - for example, to close a dialogue window before the cutscene can proceed further. As for &lt;code>delay&lt;/code>, you can&amp;rsquo;t just call &lt;code>sleep&lt;/code> function there, because the game will freeze. It won&amp;rsquo;t be updated and will be stuck in one iteration of the game loop.&lt;/p>
+&lt;p>Let&amp;rsquo;s take a look at some of the possible solutions to the problem.&lt;/p>
+&lt;h2 id="booleans-enums-state-machines">Booleans, enums, state machines&lt;/h2>
+&lt;p>The most obvious and brute-force way to implement action sequence is to store the information about its state in booleans, strings or enums. The code will look something like this:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-lua" data-lang="lua">&lt;span style="font-weight:bold">function&lt;/span> &lt;span style="color:#900;font-weight:bold">update&lt;/span>(dt)
+&lt;span style="font-weight:bold">if&lt;/span> cutsceneState &lt;span style="font-weight:bold">==&lt;/span> &lt;span style="color:#b84">&amp;#39;playerGoingToNpc&amp;#39;&lt;/span> &lt;span style="font-weight:bold">then&lt;/span>
+player:continueGoingTo(npc)
+&lt;span style="font-weight:bold">if&lt;/span> player:closeTo(npc) &lt;span style="font-weight:bold">then&lt;/span>
+cutsceneState &lt;span style="font-weight:bold">=&lt;/span> &lt;span style="color:#b84">&amp;#39;npcSayingYouDidIt&amp;#39;&lt;/span>
+dialogueWindow:show(&lt;span style="color:#b84">&amp;#34;You did it!&amp;#34;&lt;/span>)
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;span style="font-weight:bold">elseif&lt;/span> cutsceneState &lt;span style="font-weight:bold">==&lt;/span> &lt;span style="color:#b84">&amp;#39;npcSayingYouDidIt&amp;#39;&lt;/span> &lt;span style="font-weight:bold">then&lt;/span>
+&lt;span style="font-weight:bold">if&lt;/span> dialogueWindow:wasClosed() &lt;span style="font-weight:bold">then&lt;/span>
+cutsceneState &lt;span style="font-weight:bold">=&lt;/span> &lt;span style="color:#b84">&amp;#39;delay&amp;#39;&lt;/span>
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;span style="font-weight:bold">elseif&lt;/span> ...
+... &lt;span style="color:#998;font-style:italic">-- so on...&lt;/span>
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>This approach can easily lead to spaghetti code and long if-else chains, so I&amp;rsquo;d recommend to avoid it.&lt;/p>
+&lt;h2 id="action-lists">Action lists&lt;/h2>
+&lt;p>Action lists are similar to state machines. Action list is a list of actions which are executed sequentially. You can think of an action as a state in state machine. We update the current action in every iteration of game loop. If we see that the action has finished, we move on to the next one.&lt;/p>
+&lt;p>In our example, we can implement the following actions: &lt;code>GoToAction&lt;/code>, &lt;code>DialogueAction&lt;/code> and &lt;code>DelayAction&lt;/code>. Let&amp;rsquo;s look at the implementation of &lt;code>DelayAction&lt;/code>.&lt;/p>
+&lt;blockquote class="hint-info">
+I&amp;rsquo;m using &lt;a href="https://github.com/kikito/middleclass">middleclass&lt;/a> library for OOP in Lua
+&lt;/blockquote>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-lua" data-lang="lua">&lt;span style="color:#998;font-style:italic">-- constructor&lt;/span>
+&lt;span style="font-weight:bold">function&lt;/span> &lt;span style="color:#458;font-weight:bold">DelayAction&lt;/span>:&lt;span style="color:#900;font-weight:bold">initialize&lt;/span>(params)
+self.delay &lt;span style="font-weight:bold">=&lt;/span> params.delay
+self.currentTime &lt;span style="font-weight:bold">=&lt;/span> &lt;span style="color:#099">0&lt;/span>
+self.isFinished &lt;span style="font-weight:bold">=&lt;/span> &lt;span style="font-weight:bold">false&lt;/span>
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;span style="font-weight:bold">function&lt;/span> &lt;span style="color:#458;font-weight:bold">DelayAction&lt;/span>:&lt;span style="color:#900;font-weight:bold">update&lt;/span>(dt)
+self.currentTime &lt;span style="font-weight:bold">=&lt;/span> self.currentTime &lt;span style="font-weight:bold">+&lt;/span> dt
+&lt;span style="font-weight:bold">if&lt;/span> self.currentTime &lt;span style="font-weight:bold">&amp;gt;&lt;/span> self.delay &lt;span style="font-weight:bold">then&lt;/span>
+self.isFinished &lt;span style="font-weight:bold">=&lt;/span> &lt;span style="font-weight:bold">true&lt;/span>
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;code>ActionList&lt;/code>&amp;rsquo;s &lt;code>update&lt;/code> function looks like this:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-lua" data-lang="lua">&lt;span style="font-weight:bold">function&lt;/span> &lt;span style="color:#458;font-weight:bold">ActionList&lt;/span>:&lt;span style="color:#900;font-weight:bold">update&lt;/span>(dt)
+&lt;span style="font-weight:bold">if&lt;/span> &lt;span style="font-weight:bold">not&lt;/span> self.isFinished &lt;span style="font-weight:bold">then&lt;/span>
+self.currentAction:update(dt)
+&lt;span style="font-weight:bold">if&lt;/span> self.currentAction.isFinished &lt;span style="font-weight:bold">then&lt;/span>
+self:goToNextAction()
+&lt;span style="font-weight:bold">if&lt;/span> &lt;span style="font-weight:bold">not&lt;/span> self.currentAction &lt;span style="font-weight:bold">then&lt;/span>
+self.isFinished &lt;span style="font-weight:bold">=&lt;/span> &lt;span style="font-weight:bold">true&lt;/span>
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>And finally, our cutscene looks like this:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-lua" data-lang="lua">&lt;span style="font-weight:bold">function&lt;/span> &lt;span style="color:#900;font-weight:bold">makeCutsceneActionList&lt;/span>(player, npc)
+&lt;span style="font-weight:bold">return&lt;/span> ActionList:new {
+GoToAction:new {
+entity &lt;span style="font-weight:bold">=&lt;/span> player,
+target &lt;span style="font-weight:bold">=&lt;/span> npc
+},
+SayAction:new {
+entity &lt;span style="font-weight:bold">=&lt;/span> npc,
+text &lt;span style="font-weight:bold">=&lt;/span> &lt;span style="color:#b84">&amp;#34;You did it!&amp;#34;&lt;/span>
+},
+DelayAction:new {
+delay &lt;span style="font-weight:bold">=&lt;/span> &lt;span style="color:#099">0.5&lt;/span>
+},
+SayAction:new {
+entity &lt;span style="font-weight:bold">=&lt;/span> npc,
+text &lt;span style="font-weight:bold">=&lt;/span> &lt;span style="color:#b84">&amp;#34;Thank you&amp;#34;&lt;/span>
 }
 }
-&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>How my little C++ meta-serialization library works and how I wrote it</title><link>https://eliasdaler.github.io/hugo-test/posts/meta-stuff/</link><pubDate>Wed, 27 Sep 2017 22:00:00 +0300</pubDate><guid>https://eliasdaler.github.io/hugo-test/posts/meta-stuff/</guid><description>&lt;h2 id="introduction">Introduction&lt;/h2>
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;span style="color:#998;font-style:italic">-- ... and then somewhere in update:&lt;/span>
+actionList:update(dt)
+&lt;/code>&lt;/pre>&lt;/div>&lt;blockquote class="hint-info">
+In Lua &lt;code>someFunction({ ... })&lt;/code> can be written as &lt;code>someFunction{...}&lt;/code>, that&amp;rsquo;s why instead of writing &lt;code>DelayAction:new({delay = 0.5})&lt;/code> we can write &lt;code>DelayAction:new{ delay = 0.5 }&lt;/code>
+&lt;/blockquote>
+&lt;p>This looks much better. We now have a clear sequence of actions. If we want to insert new action in a cutscene, we can easily do so. And we can reuse common actions in lots of action sequences.&lt;/p>
+&lt;p>See &lt;a href="https://www.youtube.com/watch?v=o6CaB-hmqoE">this talk&lt;/a> by Sean Middleditch for more details and trickier usages of action lists:&lt;/p>
+&lt;p>Action lists are very useful. I&amp;rsquo;ve used them for several years before discovering coroutine approach and was very happy. But then I wanted to make more complex cutscenes like this:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-lua" data-lang="lua">&lt;span style="font-weight:bold">local&lt;/span> &lt;span style="font-weight:bold">function&lt;/span> &lt;span style="color:#900;font-weight:bold">cutscene&lt;/span>(player, npc)
+player:goTo(npc)
+&lt;span style="font-weight:bold">if&lt;/span> player:hasCompleted(quest) &lt;span style="font-weight:bold">then&lt;/span>
+npc:say(&lt;span style="color:#b84">&amp;#34;You did it!&amp;#34;&lt;/span>)
+delay(&lt;span style="color:#099">0.5&lt;/span>)
+npc:say(&lt;span style="color:#b84">&amp;#34;Thank you&amp;#34;&lt;/span>)
+&lt;span style="font-weight:bold">else&lt;/span>
+npc:say(&lt;span style="color:#b84">&amp;#34;Please help me&amp;#34;&lt;/span>)
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>With action lists you&amp;rsquo;ll need non-linear lists to make this happen. This can be accomplished by actions having tags. Then, you&amp;rsquo;ll be able to jump to a tagged action instead of the next one. This works, but it is not as readable as the function above.&lt;/p>
+&lt;p>We can make this code real with coroutines.&lt;/p>
+&lt;h2 id="coroutines">Coroutines&lt;/h2>
+&lt;h3 id="coroutines-basics">Coroutines basics&lt;/h3>
+&lt;p>Coroutine is a function which can be &amp;ldquo;paused&amp;rdquo; and &amp;ldquo;resumed&amp;rdquo;. It is executed in &lt;strong>the same thread&lt;/strong> as your main program. No new threads are created for it.&lt;/p>
+&lt;p>Coroutines can be paused with &lt;code>coroutine.yield&lt;/code> and resumed with &lt;code>coroutine.resume&lt;/code>. Here&amp;rsquo;s a simple example:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-lua" data-lang="lua">&lt;span style="font-weight:bold">local&lt;/span> &lt;span style="font-weight:bold">function&lt;/span> &lt;span style="color:#900;font-weight:bold">f&lt;/span>()
+print(&lt;span style="color:#b84">&amp;#34;hello&amp;#34;&lt;/span>)
+coroutine.yield()
+print(&lt;span style="color:#b84">&amp;#34;world!&amp;#34;&lt;/span>)
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;span style="font-weight:bold">local&lt;/span> c &lt;span style="font-weight:bold">=&lt;/span> coroutine.create(f)
+coroutine.resume(c)
+print(&lt;span style="color:#b84">&amp;#34;uhh...&amp;#34;&lt;/span>)
+coroutine.resume(c)
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>The output is:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sh" data-lang="sh">hello
+uhh...
+world
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>First we create a coroutine with &lt;code>coroutine.create&lt;/code>. Coroutine doesn&amp;rsquo;t start to execute after it&amp;rsquo;s created. It needs to be launched by &lt;code>coroutine.resume&lt;/code>. &lt;code>f&lt;/code> function is called then, it prints &amp;ldquo;hello&amp;rdquo; and then pauses itself by yielding. You can think of it as a form of &lt;code>return&lt;/code>, but we can still resume the function afterwards by calling &lt;code>coroutine.resume&lt;/code> if coroutine hasn&amp;rsquo;t finished its function.&lt;/p>
+&lt;p>If you pass arguments when calling &lt;code>coroutine.yield&lt;/code>, they&amp;rsquo;re returned by &lt;code>coroutine.resume&lt;/code> in the &amp;ldquo;main thread&amp;rdquo;. For example:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-lua" data-lang="lua">&lt;span style="font-weight:bold">local&lt;/span> &lt;span style="font-weight:bold">function&lt;/span> &lt;span style="color:#900;font-weight:bold">f&lt;/span>()
+...
+coroutine.yield(&lt;span style="color:#099">42&lt;/span>, &lt;span style="color:#b84">&amp;#34;some text&amp;#34;&lt;/span>)
+...
+&lt;span style="font-weight:bold">end&lt;/span>
+ok, num, text &lt;span style="font-weight:bold">=&lt;/span> coroutine.resume(c)
+print(num, text) &lt;span style="color:#998;font-style:italic">-- will print &amp;#39;42 &amp;#34;some text&amp;#34;&amp;#39;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Here, &lt;code>ok&lt;/code> is a bool, which shows the status of coroutine. If &lt;code>ok&lt;/code> is &lt;code>true&lt;/code> then everything is okay and next returned values are arguments of the last &lt;code>coroutine.yield&lt;/code> call. However, if &lt;code>f&lt;/code> calls &lt;code>error&lt;/code> function or fails at some point, the first value will be &lt;code>false&lt;/code> and the error message will be the second return of the function. Let&amp;rsquo;s see a failing coroutine:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-lua" data-lang="lua">&lt;span style="font-weight:bold">local&lt;/span> &lt;span style="font-weight:bold">function&lt;/span> &lt;span style="color:#900;font-weight:bold">f&lt;/span>()
+print(&lt;span style="color:#099">1&lt;/span> &lt;span style="font-weight:bold">+&lt;/span> notDefined)
+&lt;span style="font-weight:bold">end&lt;/span>
+c &lt;span style="font-weight:bold">=&lt;/span> coroutine.create(f)
+ok, msg &lt;span style="font-weight:bold">=&lt;/span> coroutine.resume(c)
+&lt;span style="font-weight:bold">if&lt;/span> &lt;span style="font-weight:bold">not&lt;/span> ok &lt;span style="font-weight:bold">then&lt;/span>
+print(&lt;span style="color:#b84">&amp;#34;Coroutine failed!&amp;#34;&lt;/span>, msg)
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Output:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sh" data-lang="sh">Coroutine failed!
+input:4: attempt to perform arithmetic on a nil value &lt;span style="font-weight:bold">(&lt;/span>global ‘notDefined’&lt;span style="font-weight:bold">)&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Similarly, you can pass values to a coroutine when calling &lt;code>coroutine.resume&lt;/code> and the results will be returned by &lt;code>coroutine.yield&lt;/code>:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-lua" data-lang="lua">&lt;span style="font-weight:bold">local&lt;/span> &lt;span style="font-weight:bold">function&lt;/span> &lt;span style="color:#900;font-weight:bold">f&lt;/span>()
+...
+someNum &lt;span style="font-weight:bold">=&lt;/span> coroutine.yield()
+print(someNum) &lt;span style="color:#998;font-style:italic">-- will print &amp;#34;42&amp;#34;&lt;/span>
+...
+&lt;span style="font-weight:bold">end&lt;/span>
+...
+coroutine.resume(c, &lt;span style="color:#099">42&lt;/span>)
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Coroutine can be in different states which you can check by calling &lt;code>coroutine.status&lt;/code>:&lt;/p>
+&lt;ul>
+&lt;li>&lt;code>&amp;quot;running&amp;quot;&lt;/code> - coroutine is currently running. This means that &lt;code>coroutine.status&lt;/code> was launched from inside the coroutine&amp;rsquo;s function.&lt;/li>
+&lt;li>&lt;code>&amp;quot;suspended&amp;quot;&lt;/code> - coroutine was paused or hasn&amp;rsquo;t been launched yet.&lt;/li>
+&lt;li>&lt;code>&amp;quot;normal&amp;quot;&lt;/code> - coroutine is active, but isn&amp;rsquo;t currently running (it has resumed another coroutine).&lt;/li>
+&lt;li>&lt;code>&amp;quot;dead&amp;quot;&lt;/code> - the coroutine has finished running - function has finished its execution.&lt;/li>
+&lt;/ul>
+&lt;p>Now, let&amp;rsquo;s implement coroutine-based action sequence system with this knowledge.&lt;/p>
+&lt;h3 id="implementing-cutscenes-with-coroutines">Implementing cutscenes with coroutines&lt;/h3>
+&lt;p>Here&amp;rsquo;s how our basic action will look like:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-lua" data-lang="lua">&lt;span style="font-weight:bold">function&lt;/span> &lt;span style="color:#458;font-weight:bold">Action&lt;/span>:&lt;span style="color:#900;font-weight:bold">launch&lt;/span>()
+self:init()
+&lt;span style="font-weight:bold">while&lt;/span> &lt;span style="font-weight:bold">not&lt;/span> self.finished &lt;span style="font-weight:bold">do&lt;/span>
+&lt;span style="font-weight:bold">local&lt;/span> dt &lt;span style="font-weight:bold">=&lt;/span> coroutine.yield() &lt;span style="color:#998;font-style:italic">-- the most important part&lt;/span>
+self:update(dt)
+&lt;span style="font-weight:bold">end&lt;/span>
+self:exit()
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>This is similar to what we have with action lists: the action calls &lt;code>update&lt;/code> function until it&amp;rsquo;s finished. But it yields on each game loop iteration (&lt;code>Action:launch&lt;/code> is called from some coroutine), while somewhere in our main &lt;code>update&lt;/code> (for example, in some &lt;code>ActionSequenceManager&lt;/code> which tracks the state of all action sequences) we resume it like this:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-lua" data-lang="lua">coroutine.resume(c, dt) &lt;span style="color:#998;font-style:italic">-- note that we pass dt here&lt;/span>
+&lt;span style="color:#998;font-style:italic">-- which is later used in actions&amp;#39;s update&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Our cutscene is a coroutine now:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-lua" data-lang="lua">&lt;span style="font-weight:bold">function&lt;/span> &lt;span style="color:#900;font-weight:bold">cutscene&lt;/span>(player, npc)
+player:goTo(npc)
+npc:say(&lt;span style="color:#b84">&amp;#34;You did it!&amp;#34;&lt;/span>)
+delay(&lt;span style="color:#099">0.5&lt;/span>)
+npc:say(&lt;span style="color:#b84">&amp;#34;Thank you&amp;#34;&lt;/span>)
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;span style="color:#998;font-style:italic">-- later...&lt;/span>
+&lt;span style="font-weight:bold">local&lt;/span> c &lt;span style="font-weight:bold">=&lt;/span> coroutine.create(cutscene, player, npc)
+coroutine.resume(c, dt)
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Here&amp;rsquo;s how &lt;code>delay&lt;/code> is implemented:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-lua" data-lang="lua">&lt;span style="font-weight:bold">function&lt;/span> &lt;span style="color:#900;font-weight:bold">delay&lt;/span>(time)
+action &lt;span style="font-weight:bold">=&lt;/span> DelayAction:new { delay &lt;span style="font-weight:bold">=&lt;/span> time }
+action:launch()
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Having such wrapper functions is very useful to make your cutscenes easier to read and use. Next, let&amp;rsquo;s see how &lt;code>DelayAction&lt;/code> is implemented:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-lua" data-lang="lua">&lt;span style="color:#998;font-style:italic">-- Action is a base class of DelayAction&lt;/span>
+&lt;span style="font-weight:bold">local&lt;/span> DelayAction &lt;span style="font-weight:bold">=&lt;/span> class(&lt;span style="color:#b84">&amp;#34;DelayAction&amp;#34;&lt;/span>, Action)
+&lt;span style="font-weight:bold">function&lt;/span> &lt;span style="color:#458;font-weight:bold">DelayAction&lt;/span>:&lt;span style="color:#900;font-weight:bold">initialize&lt;/span>(params)
+self.delay &lt;span style="font-weight:bold">=&lt;/span> params.delay
+self.currentTime &lt;span style="font-weight:bold">=&lt;/span> &lt;span style="color:#099">0&lt;/span>
+self.isFinished &lt;span style="font-weight:bold">=&lt;/span> &lt;span style="font-weight:bold">false&lt;/span>
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;span style="font-weight:bold">function&lt;/span> &lt;span style="color:#458;font-weight:bold">DelayAction&lt;/span>:&lt;span style="color:#900;font-weight:bold">update&lt;/span>(dt)
+self.currentTime &lt;span style="font-weight:bold">=&lt;/span> self.currentTime &lt;span style="font-weight:bold">+&lt;/span> dt
+&lt;span style="font-weight:bold">if&lt;/span> self.currentTime &lt;span style="font-weight:bold">&amp;gt;=&lt;/span> self.delayTime &lt;span style="font-weight:bold">then&lt;/span>
+self.finished &lt;span style="font-weight:bold">=&lt;/span> &lt;span style="font-weight:bold">true&lt;/span>
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>This is identical to action lists approach! Let&amp;rsquo;s take a look at &lt;code>Action&lt;/code>&amp;rsquo;s &lt;code>launch&lt;/code> function again to understand how it works:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-lua" data-lang="lua">&lt;span style="font-weight:bold">function&lt;/span> &lt;span style="color:#458;font-weight:bold">Action&lt;/span>:&lt;span style="color:#900;font-weight:bold">launch&lt;/span>()
+self:init()
+&lt;span style="font-weight:bold">while&lt;/span> &lt;span style="font-weight:bold">not&lt;/span> self.finished &lt;span style="font-weight:bold">do&lt;/span>
+&lt;span style="font-weight:bold">local&lt;/span> dt &lt;span style="font-weight:bold">=&lt;/span> coroutine.yield() &lt;span style="color:#998;font-style:italic">-- the most important part&lt;/span>
+self:update(dt)
+&lt;span style="font-weight:bold">end&lt;/span>
+self:exit()
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>As you can see, we can create &lt;code>init&lt;/code> and &lt;code>exit&lt;/code> functions to do something when action begins and ends. But the most important part is the &lt;code>while&lt;/code> loop which executes until the action is finished. Here&amp;rsquo;s a visualization of the order of execution which makes it easier to understand:&lt;/p>
+&lt;figure>&lt;img src="coroutine-game-loop.png"/>
+&lt;/figure>
+&lt;p>Now, let&amp;rsquo;s see how we can implement &lt;code>goTo&lt;/code> function:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-lua" data-lang="lua">&lt;span style="font-weight:bold">function&lt;/span> &lt;span style="color:#458;font-weight:bold">Entity&lt;/span>:&lt;span style="color:#900;font-weight:bold">goTo&lt;/span>(target)
+&lt;span style="font-weight:bold">local&lt;/span> action &lt;span style="font-weight:bold">=&lt;/span> GoToAction:new { entity &lt;span style="font-weight:bold">=&lt;/span> self, target &lt;span style="font-weight:bold">=&lt;/span> target }
+action:launch()
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;span style="color:#998;font-style:italic">-- constructor is ommited&lt;/span>
+&lt;span style="font-weight:bold">function&lt;/span> &lt;span style="color:#458;font-weight:bold">GoToAction&lt;/span>:&lt;span style="color:#900;font-weight:bold">update&lt;/span>(dt)
+&lt;span style="font-weight:bold">if&lt;/span> &lt;span style="font-weight:bold">not&lt;/span> self.entity:closeTo(self.target) &lt;span style="font-weight:bold">then&lt;/span>
+... &lt;span style="color:#998;font-style:italic">-- perform AI movement logic here&lt;/span>
+&lt;span style="font-weight:bold">else&lt;/span>
+self.finished &lt;span style="font-weight:bold">=&lt;/span> &lt;span style="font-weight:bold">true&lt;/span>
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>It&amp;rsquo;s very easy to implement new types of actions.&lt;/p>
+&lt;p>Now, let&amp;rsquo;s see how we can use coroutines with events. Let&amp;rsquo;s implement &lt;code>WaitForEventAction&lt;/code>:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-lua" data-lang="lua">&lt;span style="font-weight:bold">function&lt;/span> &lt;span style="color:#458;font-weight:bold">WaitForEventAction&lt;/span>:&lt;span style="color:#900;font-weight:bold">initialize&lt;/span>(params)
+self.finished &lt;span style="font-weight:bold">=&lt;/span> &lt;span style="font-weight:bold">false&lt;/span>
+eventManager:subscribe {
+listener &lt;span style="font-weight:bold">=&lt;/span> self,
+eventType &lt;span style="font-weight:bold">=&lt;/span> params.eventType,
+callback &lt;span style="font-weight:bold">=&lt;/span> WaitForEventAction.onEvent
+}
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;span style="font-weight:bold">function&lt;/span> &lt;span style="color:#458;font-weight:bold">WaitForEventAction&lt;/span>:&lt;span style="color:#900;font-weight:bold">onEvent&lt;/span>(event)
+self.finished &lt;span style="font-weight:bold">=&lt;/span> &lt;span style="font-weight:bold">true&lt;/span>
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>We can leave the &lt;code>update&lt;/code> function empty for that one. This action will execute until an event of &lt;code>eventType&lt;/code> is sent. As a practical example of &lt;code>WaitForEventAction&lt;/code> usage, let&amp;rsquo;s implement &lt;code>say&lt;/code> function:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-lua" data-lang="lua">&lt;span style="font-weight:bold">function&lt;/span> &lt;span style="color:#458;font-weight:bold">Entity&lt;/span>:&lt;span style="color:#900;font-weight:bold">say&lt;/span>(text)
+DialogueWindow:show(text)
+&lt;span style="font-weight:bold">local&lt;/span> action &lt;span style="font-weight:bold">=&lt;/span> WaitForEventAction:new {
+eventType &lt;span style="font-weight:bold">=&lt;/span> &lt;span style="color:#b84">&amp;#39;DialogueWindowClosed&amp;#39;&lt;/span>
+}
+action:launch()
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Nice and easy. Now, when dialogue window is closed by the player by the press of the button, it will send &lt;code>DialogueWindowClosed&lt;/code> event. The action will finish and the next one will start.&lt;/p>
+&lt;p>It&amp;rsquo;s easy to implement non-linear cutscenes, which depend on player&amp;rsquo;s choice, for example:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-lua" data-lang="lua">&lt;span style="font-weight:bold">local&lt;/span> answer &lt;span style="font-weight:bold">=&lt;/span> girl:say(&lt;span style="color:#b84">&amp;#39;do_you_love_lua&amp;#39;&lt;/span>,
+{ &lt;span style="color:#b84">&amp;#39;YES&amp;#39;&lt;/span>, &lt;span style="color:#b84">&amp;#39;NO&amp;#39;&lt;/span> })
+&lt;span style="font-weight:bold">if&lt;/span> answer &lt;span style="font-weight:bold">==&lt;/span> &lt;span style="color:#b84">&amp;#39;YES&amp;#39;&lt;/span> &lt;span style="font-weight:bold">then&lt;/span>
+girl:setMood(&lt;span style="color:#b84">&amp;#39;happy&amp;#39;&lt;/span>)
+girl:say(&lt;span style="color:#b84">&amp;#39;happy_response&amp;#39;&lt;/span>)
+&lt;span style="font-weight:bold">else&lt;/span>
+girl:setMood(&lt;span style="color:#b84">&amp;#39;angry&amp;#39;&lt;/span>)
+girl:say(&lt;span style="color:#b84">&amp;#39;angry_response&amp;#39;&lt;/span>)
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;figure>&lt;img src="dialogue.gif"/>
+&lt;/figure>
+&lt;p>The implementation of &lt;code>say&lt;/code> function is trickier there, because now you need to somehow return player&amp;rsquo;s dialogue choice, but it&amp;rsquo;s not that hard to implement. As you can see, we don&amp;rsquo;t need to implement special mechanisms for if-else statements and loops.&lt;/p>
+&lt;h3 id="advanced-usage">Advanced usage&lt;/h3>
+&lt;p>It&amp;rsquo;s easy to make quests and tutorials using coroutines. Consider this function:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-lua" data-lang="lua">girl:say(&lt;span style="color:#b84">&amp;#34;Kill that monster!&amp;#34;&lt;/span>)
+waitForEvent(&lt;span style="color:#b84">&amp;#39;EnemyKilled&amp;#39;&lt;/span>)
+girl:setMood(&lt;span style="color:#b84">&amp;#39;happy&amp;#39;&lt;/span>)
+girl:say(&lt;span style="color:#b84">&amp;#34;You did it! Thank you!&amp;#34;&lt;/span>)
+&lt;/code>&lt;/pre>&lt;/div>&lt;figure>&lt;img src="kill-monster-quest.gif"/>
+&lt;/figure>
+&lt;p>You can also use coroutines for AI. For example, to make a monster traverse a path, you can do this:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-lua" data-lang="lua">&lt;span style="font-weight:bold">function&lt;/span> &lt;span style="color:#900;font-weight:bold">followPath&lt;/span>(monster, path)
+&lt;span style="font-weight:bold">local&lt;/span> numberOfPoints &lt;span style="font-weight:bold">=&lt;/span> path:getNumberOfPoints()
+&lt;span style="font-weight:bold">local&lt;/span> i &lt;span style="font-weight:bold">=&lt;/span> &lt;span style="color:#099">0&lt;/span> &lt;span style="color:#998;font-style:italic">-- index of current waypoint on path&lt;/span>
+&lt;span style="font-weight:bold">while&lt;/span> &lt;span style="font-weight:bold">true&lt;/span> &lt;span style="font-weight:bold">do&lt;/span>
+monster:goTo(path:getPoint(i))
+&lt;span style="font-weight:bold">if&lt;/span> i &lt;span style="font-weight:bold">&amp;lt;&lt;/span> numberOfPoints &lt;span style="font-weight:bold">-&lt;/span> &lt;span style="color:#099">1&lt;/span> &lt;span style="font-weight:bold">then&lt;/span>
+i &lt;span style="font-weight:bold">=&lt;/span> i &lt;span style="font-weight:bold">+&lt;/span> &lt;span style="color:#099">1&lt;/span> &lt;span style="color:#998;font-style:italic">-- go to the next point&lt;/span>
+&lt;span style="font-weight:bold">else&lt;/span> &lt;span style="color:#998;font-style:italic">-- start from the beginning&lt;/span>
+i &lt;span style="font-weight:bold">=&lt;/span> &lt;span style="color:#099">0&lt;/span>
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;figure>&lt;img src="monster-follows-path.gif"/>
+&lt;/figure>
+&lt;p>When monster will see the player, we can just not resume the coroutine, so while that &lt;code>while&lt;/code> loop looks endless, it isn&amp;rsquo;t.&lt;/p>
+&lt;p>It&amp;rsquo;s also possible to implement &amp;ldquo;parallel&amp;rdquo; actions in a way that both actions are performed at the same time, but the action sequence goes to next action only when both actions are finished. For example, consider two NPCs moving at different speeds. When they meet at &lt;code>meetingPoint&lt;/code>, the cat says &amp;ldquo;meow&amp;rdquo;. We can implement it like this:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-lua" data-lang="lua">&lt;span style="font-weight:bold">function&lt;/span> &lt;span style="color:#900;font-weight:bold">cutscene&lt;/span>(cat, girl, meetingPoint)
+&lt;span style="font-weight:bold">local&lt;/span> c1 &lt;span style="font-weight:bold">=&lt;/span> coroutine.create(
+&lt;span style="font-weight:bold">function&lt;/span>()
+cat:goTo(meetingPoint)
+&lt;span style="font-weight:bold">end&lt;/span>)
+&lt;span style="font-weight:bold">local&lt;/span> c2 &lt;span style="font-weight:bold">=&lt;/span> coroutine.create(
+&lt;span style="font-weight:bold">function&lt;/span>()
+girl:goTo(meetingPoint)
+&lt;span style="font-weight:bold">end&lt;/span>)
+c1.resume()
+c2.resume()
+&lt;span style="color:#998;font-style:italic">-- synchronization&lt;/span>
+waitForFinish(c1, c2)
+&lt;span style="color:#998;font-style:italic">-- cutscene continues&lt;/span>
+cat:say(&lt;span style="color:#b84">&amp;#34;meow&amp;#34;&lt;/span>)
+...
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>The important part here is &lt;code>waitForFinish&lt;/code> function which is a wrapper around &lt;code>WaitForFinishAction&lt;/code> which can be implemented like this:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-lua" data-lang="lua">&lt;span style="font-weight:bold">function&lt;/span> &lt;span style="color:#458;font-weight:bold">WaitForFinishAction&lt;/span>:&lt;span style="color:#900;font-weight:bold">update&lt;/span>(dt)
+&lt;span style="font-weight:bold">if&lt;/span> coroutine.status(self.c1) &lt;span style="font-weight:bold">==&lt;/span> &lt;span style="color:#b84">&amp;#39;dead&amp;#39;&lt;/span> &lt;span style="font-weight:bold">and&lt;/span>
+coroutine.status(self.c2) &lt;span style="font-weight:bold">==&lt;/span> &lt;span style="color:#b84">&amp;#39;dead&amp;#39;&lt;/span> &lt;span style="font-weight:bold">then&lt;/span>
+self.finished &lt;span style="font-weight:bold">=&lt;/span> &lt;span style="font-weight:bold">true&lt;/span>
+&lt;span style="font-weight:bold">else&lt;/span>
+&lt;span style="font-weight:bold">if&lt;/span> coroutine.status(self.c1) &lt;span style="font-weight:bold">~=&lt;/span> &lt;span style="color:#b84">&amp;#39;dead&amp;#39;&lt;/span> &lt;span style="font-weight:bold">then&lt;/span>
+coroutine.resume(self.c1, dt)
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;span style="font-weight:bold">if&lt;/span> coroutine.status(self.c2) &lt;span style="font-weight:bold">~=&lt;/span> &lt;span style="color:#b84">&amp;#39;dead&amp;#39;&lt;/span> &lt;span style="font-weight:bold">then&lt;/span>
+coroutine.resume(self.c2, dt)
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;span style="font-weight:bold">end&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>You can also take it a step further and allow &lt;code>WaitForFinishAction&lt;/code> to take an arbitrary amount of actions to synchronize. You can also implement an action which waits until one of the actions is finished. For example, this can be used for racing mini-games. You&amp;rsquo;ll be able to check when one of the cars arrives the finish line and then execute some action sequence.&lt;/p>
+&lt;h3 id="pros-and-cons-of-coroutines">Pros and cons of coroutines&lt;/h3>
+&lt;p>Coroutine approach is very powerful. The action sequences and cutscenes written with it can be easily read and modified, even by non-programmers.&lt;/p>
+&lt;p>What&amp;rsquo;s also great is about it is that everything happens in one thread, so you don&amp;rsquo;t have synchronization or data racing problems.&lt;/p>
+&lt;p>The approach is not perfect, however. For example, it&amp;rsquo;s hard to handle saving. For example, suppose that you have a long tutorial which is just one big coroutine. The player won&amp;rsquo;t be able to save during this tutorial, because you&amp;rsquo;d have to serialize coroutine&amp;rsquo;s state and then resume coroutine exactly from the point it was paused at.&lt;/p>
+&lt;!-- raw HTML omitted -->
+&lt;p>This is not a problem if you use coroutines for cutscenes, as it&amp;rsquo;s usually not allowed for player to save during them.&lt;/p>
+&lt;p>As for the long tutorial example - you can just separate your tutorial in chunks and then allow player to only save between them. For example, part A of the tutorial happens in a room without a save point. Then, there&amp;rsquo;s another room with a save point to which player goes once part A is finished. Then, part B begins. If you separate tutorial into two coroutines, serializing won&amp;rsquo;t be a problem, as you&amp;rsquo;ll only need to save a string which will contain info about the point of tutorial which player has completed.&lt;/p>
+&lt;h2 id="conclusion">Conclusion&lt;/h2>
+&lt;p>As you can see, there are different approaches to implementing actions sequences and cutscenes. I believe coroutine approach is one of the most useful and clearest for writing action sequences and cutscenes. I hope this approach will make your life easier and you&amp;rsquo;ll make tons of complex and fun cutscenes with it.&lt;/p>
+&lt;p>Thanks for reading!&lt;/p></description></item><item><title>How my little C++ meta-serialization library works and how I wrote it</title><link>https://eliasdaler.github.io/hugo-test/posts/meta-stuff/</link><pubDate>Wed, 27 Sep 2017 22:00:00 +0300</pubDate><guid>https://eliasdaler.github.io/hugo-test/posts/meta-stuff/</guid><description>&lt;h2 id="introduction">Introduction&lt;/h2>
 &lt;p>A year ago I wrote a small library called &lt;a href="https://github.com/eliasdaler/MetaStuff">MetaStuff&lt;/a>. It is used to register meta info about classes, which can be later used for serialization, deserialization, making GUI and so on. The cool thing about it is that you can write a serializer for your own data format, be it JSON, Lua or anything else. The library is very small, it uses C++14, requires no pre-build process, RTTI, macros&amp;hellip; It&amp;rsquo;s just templates!&lt;/p>
 &lt;p>Let&amp;rsquo;s look at how registration and serialization work. Suppose you have the following struct:&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp">&lt;span style="font-weight:bold">struct&lt;/span> &lt;span style="color:#458;font-weight:bold">Person&lt;/span> {
